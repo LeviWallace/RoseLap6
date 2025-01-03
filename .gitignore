@@ -27,3 +27,12 @@ dist-ssr
 pnpm-lock.yaml
 yarn.lock
 bun.lockb
+
+#amplify
+.amplify/*
+amplify_outputs.json
+amplify/\#current-cloud-backend
+amplify/.config/local-*
+amplify/backend/amplify-meta.json
+aws-exports.js
+awsconfiguration.json

@@ -6,12 +6,40 @@ import { Navbar as NextUINavbar,
   NavbarItem,
 } from "@nextui-org/navbar";
 import { siteConfig } from "@/config/site";
+import { Dropdown, DropdownTrigger, DropdownMenu, DropdownSection, DropdownItem } from "@nextui-org/dropdown";
 import { ThemeSwitch } from "./theme-switch";
+import { useEffect, useState } from "react";
+import { signOut, fetchUserAttributes } from "aws-amplify/auth";
+
 
 export const Navbar = () => {
+  const [username, setUsername] = useState<string | null>("");
+
+  const handleGetLoginUser = async () => {
+    try {
+      const user: any = await fetchUserAttributes();
+      setUsername(user['custom:firstName']);
+    } catch (error) {
+      setUsername(null);
+    }
+  }
+
+  const handleLogout = async () => {
+    try {
+      await signOut();
+      setUsername(null)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  useEffect(() => {
+    handleGetLoginUser();
+  }, []);
+
   return (
     <NextUINavbar className="bg-transparent" isBlurred={false} shouldHideOnScroll maxWidth="full" position="sticky">
-      <NavbarBrand>
+    <NavbarBrand>
         <Link
           className="flex justify-start items-center"
           href="/"
@@ -39,8 +67,58 @@ export const Navbar = () => {
       </NavbarContent>
 
       <NavbarContent justify="end" className="isolate">
-        <NavbarItem>
-          <Button as={Link} color="primary" size="lg" radius="full" href="/login">Log In</Button>
+      <NavbarItem>
+          {
+            username == null ?
+              (
+                <Button as={Link} color="primary" size="lg" radius="full" href="/login">Log In</Button>
+              ) 
+              :
+              (
+                <Dropdown
+                  showArrow
+                  classNames={{
+                    base: "before:", // change arrow background
+                    content: "border border-white bg-background",
+                  }}>
+                  <DropdownTrigger>
+                    <Button
+                      color="primary" size="lg" radius="full"
+                    >
+                      {username !== "" ? `Hello, ${username}` : "Loading..."}
+                    </Button>
+                  </DropdownTrigger>
+                  <DropdownMenu aria-label="Static Actions">
+                    <DropdownSection showDivider className="">
+                      {siteConfig.dropdownAccountItems.map((item) => (
+                        <DropdownItem color="primary" key={item.href} description="View Account Settings">
+                          <Link
+                            color="foreground"
+                            href={item.href}
+                          >
+                            {item.label}
+                          </Link>
+                        </DropdownItem>
+                      ))}
+                    </DropdownSection>
+                    <DropdownSection showDivider>
+                      {siteConfig.dropdownItems.map((item) => (
+                        <DropdownItem color="primary" key={item.href}>
+                          <Link
+                            color="foreground"
+                            href={item.href}
+                          >
+                            {item.label}
+                          </Link>
+                      </DropdownItem>
+                      ))}
+                    </DropdownSection>
+                    <DropdownItem key="delete" className="text-primary" color="secondary" onClick={handleLogout}>
+                      Logout
+                    </DropdownItem>
+                  </DropdownMenu>
+                </Dropdown>
+              )}
         </NavbarItem>
 
         <NavbarItem>
@@ -50,3 +128,7 @@ export const Navbar = () => {
     </NextUINavbar>
   );
 };
+function currentUserInfo(): { username: any; } | PromiseLike<{ username: any; }> {
+  throw new Error("Function not implemented.");
+}
+
