@@ -224,7 +224,7 @@ const SignInForm = ({ onNextStep }: { onNextStep: (nextStep: string, details?: a
                     variant="bordered"
                     classNames={{
                         input: ["bg-transparent", "text-foreground", "placeholder:text-grey"],
-                        inputWrapper: "border-1 border-foreground rounded-none",
+                        inputWrapper: "border-1 rounded-none border-foreground hover:border-foreground",
                     }}
                 />
                 <Input
@@ -290,7 +290,7 @@ const ConformSignUpForm = ({ onNextStep, userEmail }: { onNextStep: (nextStep: s
             setErrorMessage(error.message);
         }
     }
-    
+
     return (
         <form onSubmit={handleConformSignIn} noValidate>
             <div className="bg-background border-small border-foreground p-3 w-1/3 mx-auto">
@@ -359,9 +359,11 @@ export default function LoginPage()
 
     return (
         <DefaultLayout>
-            {step === 'LOGIN' && <SignInForm onNextStep={loginCallback} />}
-            {step === 'REGISTER' && <RegisterForm onNextStep={loginCallback}/>}
-            {step === 'CONFIRM_SIGN_UP' && <ConformSignUpForm onNextStep={loginCallback} userEmail={userDetails.email}/>}
+            <div> 
+                {step === 'LOGIN' && <SignInForm onNextStep={loginCallback} />}
+                {step === 'REGISTER' && <RegisterForm onNextStep={loginCallback}/>}
+                {step === 'CONFIRM_SIGN_UP' && <ConformSignUpForm onNextStep={loginCallback} userEmail={userDetails.email}/>}
+            </div>
         </DefaultLayout>
     );
 }

@@ -3,12 +3,13 @@ import { siteConfig } from "@/config/site";
 
 function Footer() {
     return (
+        <div className="absolute bottom-0 w-full">
         <div className="min-h-[175px] w-full bg-background grid grid-cols-12 absolute">
-            <div className="col-span-4 my-10 mx-6">
+            <div className="col-span-4 my-5 mx-6">
                 <div className="flex flex-row">
-                    <h1 className="text-foreground text-3xl italic tracking-tight inline font-semibold">Rose</h1>
-                    <h1 className="text-primary text-3xl italic tracking-tight inline font-semibold">Lap</h1>
-                    <h1 className="text-foreground text-3xl italic tracking-tight inline font-semibold">6</h1>
+                    <h1 className="text-foreground text-4xl italic tracking-tight inline font-semibold">Rose</h1>
+                    <h1 className="text-primary text-4xl italic tracking-tight inline font-semibold">Lap</h1>
+                    <h1 className="text-foreground text-4xl italic tracking-tight inline font-semibold">6</h1>
                 </div>
                 <h3 className="italic text-foreground font-thin">Rose-Hulman Institute of Technology's Formula SAE Team</h3>
                 <h4 className="italic text-foreground font-thin">© RoseLap 2024</h4>
@@ -33,7 +34,7 @@ function Footer() {
                     ))}
                 </ul>
             </div>
-            
+            </div>
         </div>
     );
 }

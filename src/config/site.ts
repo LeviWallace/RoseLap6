@@ -10,7 +10,7 @@ export const siteConfig = {
     },
     {
       label: "My Account",
-      href: "/my",
+      href: "/landing",
     },
     {
       label: "History",
@@ -20,15 +20,15 @@ export const siteConfig = {
   accountItems: [
     {
       label: "Vehicles",
-      href: "/my/vehicles",
+      href: "/landing/vehicles",
     },
     {
       label: "Tracks",
-      href: "/my/tracks",
+      href: "/landing/tracks",
     },
     {
       label: "Previous Sweeps",
-      href: "/my/sweeps",
+      href: "/landing/sweeps",
     }
   ],
   links: [
