@@ -128,7 +128,5 @@ export const Navbar = () => {
     </NextUINavbar>
   );
 };
-function currentUserInfo(): { username: any; } | PromiseLike<{ username: any; }> {
-  throw new Error("Function not implemented.");
-}
+
 

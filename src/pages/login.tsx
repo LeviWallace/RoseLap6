@@ -6,6 +6,7 @@ import { Input } from "@nextui-org/input";
 import { useNavigate } from "react-router-dom";
 import outputs from "../../amplify_outputs.json";
 import { Amplify } from "aws-amplify";
+import { EyeFilledIcon, EyeSlashFilledIcon } from "@/components/icons";
 
 Amplify.configure(outputs)
 
@@ -15,6 +16,25 @@ const RegisterForm = ({ onNextStep }: { onNextStep: (nextStep: string, details?:
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirm, setConfirm] = useState("");
+
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirm, setShowConfirm] = useState(false);
+
+    const [confirmBorderColor, setConfirmBorderColor] = useState("border-foreground");
+
+    useEffect(() => {
+        if (confirm.length == 0) {
+            setConfirmBorderColor("border-foreground");
+        } else if (confirm === password) {
+            setConfirmBorderColor("border-green-500");
+        } else {
+            setConfirmBorderColor("border-red-500");
+        }
+    }, [password, confirm]);
+
+    const toggleShowPassword = () => setShowPassword(!showPassword);
+    const toggleShowConfirm = () => setShowConfirm(!showConfirm);
+
 
     const [errorMessage, setErrorMessage] = useState("");
 
@@ -54,6 +74,7 @@ const RegisterForm = ({ onNextStep }: { onNextStep: (nextStep: string, details?:
                     className="my-7 px-4"
                     placeholder="Enter your first name"
                     type="text"
+                    label="First Name"
                     variant="bordered"
                     classNames={{
                         input: ["bg-transparent", "text-foreground", "placeholder:text-grey"],
@@ -67,6 +88,7 @@ const RegisterForm = ({ onNextStep }: { onNextStep: (nextStep: string, details?:
                     className="my-7 px-4"
                     placeholder="Enter your last name"
                     type="text"
+                    label="Last Name"
                     variant="bordered"
                     classNames={{
                         input: ["bg-transparent", "text-foreground", "placeholder:text-grey"],
@@ -80,6 +102,7 @@ const RegisterForm = ({ onNextStep }: { onNextStep: (nextStep: string, details?:
                     className="my-7 px-4"
                     placeholder="Enter your email"
                     type="email"
+                    label="Email"
                     variant="bordered"
                     classNames={{
                         input: ["bg-transparent", "text-foreground", "placeholder:text-grey"],
@@ -92,12 +115,27 @@ const RegisterForm = ({ onNextStep }: { onNextStep: (nextStep: string, details?:
                     onChange={(e) => setPassword(e.target.value)}
                     className="my-7 px-4"
                     placeholder="*********"
-                    type="password"
+                    type={showPassword ? "text" : "password"}
+                    label="Password"
                     variant="bordered"
                     classNames={{
                         input: ["bg-transparent", "text-foreground", "placeholder:text-grey"],
                         inputWrapper: "border-1 border-foreground rounded-none",
                     }}
+                    endContent={
+                        <button
+                          aria-label="toggle password visibility"
+                          className="focus:outline-none"
+                          type="button"
+                          onClick={toggleShowPassword}
+                        >
+                          {showPassword ? (
+                            <EyeFilledIcon className="text-2xl text-default-400 pointer-events-none" />
+                          ) : (
+                            <EyeSlashFilledIcon className="text-2xl text-default-400 pointer-events-none" />
+                          )}
+                        </button>
+                      }
                 />
                 <Input
                     name="confirm"
@@ -105,21 +143,36 @@ const RegisterForm = ({ onNextStep }: { onNextStep: (nextStep: string, details?:
                     onChange={(e) => setConfirm(e.target.value)}
                     className="my-7 px-4"
                     placeholder="*********"
-                    type="password"
+                    type={showConfirm ? "text" : "password"}
+                    label="Confirm Password"
                     variant="bordered"
                     classNames={{
                         input: ["bg-transparent", "text-foreground", "placeholder:text-grey"],
-                        inputWrapper: "border-1 border-foreground rounded-none",
+                        inputWrapper: `border-1 border-foreground rounded-none ${confirmBorderColor}`,
                     }}
+                    endContent={
+                        <button
+                          aria-label="toggle password visibility"
+                          className="focus:outline-none"
+                          type="button"
+                          onClick={toggleShowConfirm}
+                        >
+                          {showConfirm ? (
+                            <EyeFilledIcon className="text-2xl text-default-400 pointer-events-none" />
+                          ) : (
+                            <EyeSlashFilledIcon className="text-2xl text-default-400 pointer-events-none" />
+                          )}
+                        </button>
+                    }
                 />
                 <Button type="submit" className="w-full" color="primary" radius="none">
                     Register
                 </Button>
                 {errorMessage && (
-                    <p className="text-red-700 text-center mt-3 italic text-small uppercase">{errorMessage}</p>
+                    <p className="danger text-center mt-3 italic text-small">{errorMessage}</p>
                 )}
                 <h1 className="mt-3 text-sm font-thin text-foreground text-center">
-                    Already have an account? <a className="font-bold italic" onClick={() => onNextStep("LOGIN", {})}>Sign in</a>
+                    Already have an account? <a className="font-bold italic cursor-pointer" onClick={() => onNextStep("LOGIN", {})}>Sign in</a>
                 </h1>
             </div>
         </form>
@@ -130,6 +183,9 @@ const SignInForm = ({ onNextStep }: { onNextStep: (nextStep: string, details?: a
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
+
+    const toggleShowPassword = () => setShowPassword(!showPassword);
     // const navigate = useNavigate();
 
     const handleLogin = async (e: React.FormEvent) => {
@@ -162,8 +218,9 @@ const SignInForm = ({ onNextStep }: { onNextStep: (nextStep: string, details?: a
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className="my-7 px-4"
-                    placeholder="Enter your email..."
+                    placeholder="Enter your email"
                     type="email"
+                    label="Email"
                     variant="bordered"
                     classNames={{
                         input: ["bg-transparent", "text-foreground", "placeholder:text-grey"],
@@ -176,21 +233,36 @@ const SignInForm = ({ onNextStep }: { onNextStep: (nextStep: string, details?: a
                     onChange={(e) => setPassword(e.target.value)}
                     className="my-7 px-4"
                     placeholder="*********"
-                    type="password"
+                    type={showPassword ? "text" : "password"}
+                    label="Password"
                     variant="bordered"
                     classNames={{
                         input: ["bg-transparent", "text-foreground", "placeholder:text-grey"],
                         inputWrapper: "border-1 border-foreground rounded-none",
                     }}
+                    endContent={
+                        <button
+                          aria-label="toggle password visibility"
+                          className="focus:outline-none"
+                          type="button"
+                          onClick={toggleShowPassword}
+                        >
+                          {showPassword ? (
+                            <EyeFilledIcon className="text-2xl text-default-400 pointer-events-none" />
+                          ) : (
+                            <EyeSlashFilledIcon className="text-2xl text-default-400 pointer-events-none" />
+                          )}
+                        </button>
+                      }
                 />
                 <Button type="submit" className="w-full" color="primary" radius="none">
                     Log In
                 </Button>
                 {errorMessage && (
-                    <p className="text-red-700 text-center mt-3 italic text-small">{errorMessage}</p>
+                    <p className="danger text-center mt-3 italic text-small">{errorMessage}</p>
                 )}
                 <h1 className="mt-3 text-sm font-thin text-foreground text-center">
-                    Don't have an account yet? <a className="font-bold italic" onClick={() => onNextStep("REGISTER", {})}>Sign up</a>
+                    Don't have an account yet? <a className="font-bold italic cursor-pointer" onClick={() => onNextStep("REGISTER", {})}>Sign up</a>
                 </h1>
             </div>
         </form>
@@ -200,6 +272,9 @@ const SignInForm = ({ onNextStep }: { onNextStep: (nextStep: string, details?: a
 const ConformSignUpForm = ({ onNextStep, userEmail }: { onNextStep: (nextStep: string, details?: any) => void, userEmail: string }) => {
     const [confirmationCode, setConfirmationCode] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
+    const [showConfirm, setShowConfirm] = useState(false);
+
+    const toggleShowConfirm = () => setShowConfirm(!showConfirm);
     // const navigate = useNavigate();
 
     const handleConformSignIn = async (e: React.FormEvent) => {
@@ -210,21 +285,12 @@ const ConformSignUpForm = ({ onNextStep, userEmail }: { onNextStep: (nextStep: s
                 confirmationCode: confirmationCode,
             });
             console.log(result);
+            onNextStep(result.nextStep.signUpStep, { email: userEmail });
         } catch (error: any) {
             setErrorMessage(error.message);
         }
     }
-
-    // const handleSendCode = async () => {
-    //     try {
-    //         const result = await confirmSignUp({ username: userEmail, confirmationCode: confirmationCode });
-    //     } cathc 
-    // }
-
-    // useEffect(() => {
-    //     handleSendCode();
-    // }, []);
-
+    
     return (
         <form onSubmit={handleConformSignIn} noValidate>
             <div className="bg-background border-small border-foreground p-3 w-1/3 mx-auto">
@@ -239,18 +305,32 @@ const ConformSignUpForm = ({ onNextStep, userEmail }: { onNextStep: (nextStep: s
                     onChange={(e) => setConfirmationCode(e.target.value)}
                     className="my-7 px-4"
                     placeholder="*********"
-                    type="password"
+                    type={showConfirm ? "text" : "password"}
                     variant="bordered"
                     classNames={{
                         input: ["bg-transparent", "text-foreground", "placeholder:text-grey"],
                         inputWrapper: "border-1 border-foreground rounded-none",
                     }}
+                    endContent={
+                        <button
+                          aria-label="toggle password visibility"
+                          className="focus:outline-none"
+                          type="button"
+                          onClick={toggleShowConfirm}
+                        >
+                          {showConfirm ? (
+                            <EyeFilledIcon className="text-2xl text-default-400 pointer-events-none" />
+                          ) : (
+                            <EyeSlashFilledIcon className="text-2xl text-default-400 pointer-events-none" />
+                          )}
+                        </button>
+                      }
                 />
                 <Button type="submit" className="w-full" color="primary" radius="none">
-                    Sign in
+                    Confirm Sign In
                 </Button>
                 {errorMessage && (
-                    <p className="text-red-700 text-center mt-3 italic text-small">{errorMessage}</p>
+                    <p className="danger text-center mt-3 italic text-small">{errorMessage}</p>
                 )}
             </div>
         </form>
