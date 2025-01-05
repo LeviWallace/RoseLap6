@@ -13,15 +13,15 @@ import { type Field, vehicle } from "@/config/sim";
 export default function Vehicles() {
   return (
     <DefaultLayout>
-        <h1 className="text-foreground text-3xl tracking-tigher p-2 font-bold">Vehicles Page</h1>
+        <h1 className="text-foreground text-3xl tracking-tigher p-2 font-bold">Vehicle Page</h1>
         
-        <div className="w-full" >
+        <div className="w-full border-foregroud border-1" >
             <Table aria-label="Vehicle Table" selectionMode="single"
                 classNames={{
                     table: "bg-background text-foreground",
                     thead: "border-1",
                     th: "text-foreground bg-transparent",
-                    td: "border-none",
+                    td: "border-none border-1 border-foreground",
                     tbody: "bg-transparent",
                     wrapper: "p-0 rounded-none",
                 }}>
@@ -29,6 +29,21 @@ export default function Vehicles() {
                     {(column: Field) => <TableColumn key={column.label}>{column.label}</TableColumn>}
                 </TableHeader>
                 <TableBody emptyContent={"No rows to display."}>
+                    <TableRow>
+                        {Object.values(vehicle).map((column: Field) => (
+                            <TableCell key={column.label}>{column.label}</TableCell>
+                        ))}
+                    </TableRow>
+                    <TableRow>
+                        {Object.values(vehicle).map((column: Field) => (
+                            <TableCell key={column.label}>{column.label}</TableCell>
+                        ))}
+                    </TableRow>
+                    <TableRow>
+                        {Object.values(vehicle).map((column: Field) => (
+                            <TableCell key={column.label}>{column.label}</TableCell>
+                        ))}
+                    </TableRow>
                 </TableBody>
             </Table>
         </div>
