@@ -1,11 +1,99 @@
 import { type ClientSchema, a, defineData } from "@aws-amplify/backend";
-
+import { title } from "process";
 
 const schema = a.schema({
   Vehicle: a
     .model({
       title: a.string(),
-      description: a.string(),
+      mass: a.float(),
+      frontMassDistribution: a.float(),
+      wheelbase: a.float(),
+      steeringRackRatio: a.float(),
+      
+      tireId: a.id(),
+      aerodynamicsId: a.id(),
+      brakesId: a.id(),
+      engineId: a.id(),
+      transmissionId: a.id(),
+      torqueCurveId: a.id(),
+    })
+    .authorization((allow) => [allow.publicApiKey()]),
+
+  Tire: a
+    .model({
+      name: a.string(),
+      wheelBase: a.float(),
+      stearingRackRatio: a.float(),
+      gripFactorMultiplier: a.float(),
+      tireRadius: a.float(),
+      rollingResistance: a.float(),
+      longitudinalFrictionCoefficient: a.float(),
+      longitudinalFrictionLoadRating: a.float(),
+      longitudinalFrictionSensitivity: a.float(),
+      lateralFrictionCoefficient: a.float(),
+      lateralFrictionLoadRating: a.float(),
+      lateralFrictionSensitivity: a.float(),
+      frontCorneringStiffness: a.float(),
+      rearCorneringStiffness: a.float(),
+    })
+    .authorization((allow) => [allow.publicApiKey()]),
+  
+  Aerodynamics: a
+    .model({
+      name: a.string(),
+      liftCoefficientCL: a.float(),
+      dragCoefficientCD: a.float(),
+      clScaleMultiplier: a.float(),
+      cdScaleMultiplier: a.float(),
+      frontAeroDistribution: a.float(),
+      frontalArea: a.float(),
+      airDensity: a.float(),
+    })
+    .authorization((allow) => [allow.publicApiKey()]),
+
+
+  Brakes: a
+    .model({
+      name: a.string(),
+      discOuterDiameter: a.float(),
+      padHeight: a.float(),
+      padFrictionCoefficient: a.float(),
+      caliperNumberOfPistons: a.float(),
+      caliperPistonDiameter: a.float(),
+      masterCylinderPistonDiameter: a.float(),
+      pedalRatio: a.float(),
+    })
+    .authorization((allow) => [allow.publicApiKey()]),
+  
+  Engine: a
+    .model({
+      name: a.string(),
+      powerFactorMultiplier: a.float(),
+      thermalEfficiency: a.float(),
+      fuelLowerHeatingValue: a.float(),
+    })
+    .authorization((allow) => [allow.publicApiKey()]),
+
+  Transmission: a
+    .model({
+      name: a.string(),
+      driveType: a.enum(["FWD", "RWD", "AWD"]),
+      finalDriveRatio: a.float(),
+      gearShiftTime: a.float(),
+      primaryGearEfficiency: a.float(),
+      finalGearEfficiency: a.float(),
+      gearboxEfficiency: a.float(),
+      primaryGearReduction: a.float(),
+      finalGearReduction: a.float(),
+      gearRatios: a.float().array(),
+    })
+    .authorization((allow) => [allow.publicApiKey()]),
+
+  TorqueCurve: a
+    .model({
+      name: a.string(),
+      rpms: a.float().array(),
+      torques: a.float().array(),
     })
     .authorization((allow) => [allow.publicApiKey()]),
 });
