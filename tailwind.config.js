@@ -16,7 +16,7 @@ module.exports = {
         foreground: "hsl(var(--foreground))",
         primary: "hsl(var(--primary))",
         secondary: "hsl(var(--secondary))",
-        radius: "var(--radius)",
+        radius: "var(--radius))",
         danger: "hsl(var(--danger))",
       }
     },

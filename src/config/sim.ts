@@ -1,4 +1,4 @@
-export type Vehicle = typeof vehicle;
+export type Vehicle = typeof vehicleConfig;
 
 export type Field = {
     type: string;
@@ -6,7 +6,7 @@ export type Field = {
     unit: string;
 }
 
-export const vehicle = {
+export const vehicleConfig = {
     /* BASE */
     title: {
         type: "String",
@@ -66,12 +66,14 @@ export const vehicle = {
         type: "Array",
         label: "Torque Curve",
         unit: "Nm",
-    }
+    },
+
+    fields: ["title", "mass", "frontMassDistribution", "wheelbase", "steeringRackRatio", "tireId", "aerodynamicsId", "brakesId", "engineId", "transmissionId", "torqueCurveId"]
 }
 
-export type Tire = typeof tires;
+export type Tire = typeof tiresConfig;
 
-export const tires = {
+export const tiresConfig = {
     name: {
         type: "String",
         label: "Name",
@@ -144,9 +146,9 @@ export const tires = {
     }
 }
 
-export type Aerodynamics = typeof aerodynamics;
+export type Aerodynamics = typeof aerodynamicsConfig;
 
-export const aerodynamics = {
+export const aerodynamicsConfig = {
     name: {
         type: "String",
         label: "Name",
@@ -189,9 +191,9 @@ export const aerodynamics = {
     }
 }
 
-export type Brakes = typeof brakes;
+export type Brakes = typeof brakesConfig;
 
-export const brakes = {
+export const brakesConfig = {
     name: {
         type: "String",
         label: "Name",
@@ -234,9 +236,9 @@ export const brakes = {
     }
 }
 
-export type Engine = typeof engine;
+export type Engine = typeof engineConfig;
 
-export const engine = {
+export const engineConfig = {
     name: {
         type: "String",
         label: "Name",
@@ -261,9 +263,9 @@ export const engine = {
     }
 }
 
-export type Transmission = typeof transmission;
+export type Transmission = typeof transmissionConfig;
 
-export const transmission = {
+export const transmissionConfig = {
     name: {
         type: "String",
         label: "Name",

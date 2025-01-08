@@ -11,7 +11,9 @@
 	},
 	"dependencies": {
 		"@aws-amplify/ui-react": "^6.8.0",
+		"@nextui-org/autocomplete": "^2.3.9",
 		"@nextui-org/button": "2.2.8",
+		"@nextui-org/card": "^2.2.9",
 		"@nextui-org/code": "2.2.5",
 		"@nextui-org/drawer": "^2.2.7",
 		"@nextui-org/dropdown": "2.3.3",
