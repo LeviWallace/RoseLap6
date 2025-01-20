@@ -1,0 +1,57 @@
+@startuml
+
+entity Vehicle {
+}
+
+entity Tire {
+}
+
+entity Aerodynamics {
+}
+
+entity Brakes {
+}
+
+entity Engine {
+}
+
+entity Transmission {
+}
+
+entity TorqueCurve {
+}
+
+entity Shape {
+}
+
+entity Elevation {
+}
+
+entity Banking {
+}
+
+entity Track {
+}
+
+entity Simulation {
+}
+
+entity SimulationProps {
+}
+
+Vehicle -d-> Tire
+Vehicle -d-> Aerodynamics
+Vehicle -d-> Brakes
+Vehicle -d-> Engine
+Vehicle -d-> Transmission
+Vehicle -d-> TorqueCurve
+
+Track -d-> Shape
+Track -d-> Elevation
+Track -d-> Banking
+
+Simulation -d-> Track
+Simulation -d-> Vehicle
+Simulation -r-> SimulationProps
+
+@enduml

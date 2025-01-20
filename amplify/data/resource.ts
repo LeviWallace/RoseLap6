@@ -4,7 +4,7 @@ import { title } from "process";
 const schema = a.schema({
   Vehicle: a
     .model({
-      title: a.string(),
+      name: a.string(),
       mass: a.float(),
       frontMassDistribution: a.float(),
       wheelbase: a.float(),
@@ -77,7 +77,7 @@ const schema = a.schema({
   Transmission: a
     .model({
       name: a.string(),
-      driveType: a.enum(["FWD", "RWD", "AWD"]),
+      driveType: a.enum(["FrontWheelDrive", "RearWheelDrive", "AllWheelDrive"]),
       finalDriveRatio: a.float(),
       gearShiftTime: a.float(),
       primaryGearEfficiency: a.float(),
@@ -96,6 +96,38 @@ const schema = a.schema({
       torques: a.float().array(),
     })
     .authorization((allow) => [allow.publicApiKey()]),
+
+  Shape: a.customType({
+    type: a.enum(["Straight", "LeftTurn", "RightTurn"]),
+    length: a.float(),
+    cornerRadius: a.float()
+  }),
+
+  Elevation: a.customType({
+    point: a.float(),
+    elevation: a.float(),
+  }),
+
+  Banking: a.customType({
+    point: a.float(),
+    banking: a.float(),
+  }),
+
+  Track: a
+    .model({
+      name: a.string(),
+      country: a.string(),
+      city: a.string(),
+      direction: a.boolean(),
+      mirror: a.boolean(),
+
+      shape: a.ref('Shape').array(),
+      elevation: a.ref('Elevation').array(),
+      banking: a.ref('Banking').array(),
+    })
+    .authorization((allow) => [allow.publicApiKey()]),
+
+  
 });
 
 export type Schema = ClientSchema<typeof schema>;
