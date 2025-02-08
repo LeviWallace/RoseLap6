@@ -113,7 +113,7 @@ export const Navbar = () => {
                       </DropdownItem>
                       ))}
                     </DropdownSection>
-                    <DropdownItem key="delete" className="text-primary" color="secondary" onClick={handleLogout}>
+                    <DropdownItem key="delete" className="text-primary" color="secondary" onPress={handleLogout}>
                       Logout
                     </DropdownItem>
                   </DropdownMenu>

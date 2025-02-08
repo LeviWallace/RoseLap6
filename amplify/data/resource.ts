@@ -1,7 +1,9 @@
 import { type ClientSchema, a, defineData } from "@aws-amplify/backend";
-import { title } from "process";
+import { test } from "../functions/test/resource";
 
 const schema = a.schema({
+  // BACKEND DATABASE
+  // --- VEHICLE MODEL
   Vehicle: a
     .model({
       name: a.string(),
@@ -97,6 +99,7 @@ const schema = a.schema({
     })
     .authorization((allow) => [allow.publicApiKey()]),
 
+  // --- TRACK MODEL
   Shape: a.customType({
     type: a.enum(["Straight", "LeftTurn", "RightTurn"]),
     length: a.float(),
@@ -127,7 +130,16 @@ const schema = a.schema({
     })
     .authorization((allow) => [allow.publicApiKey()]),
 
-  
+    // METHODS
+    // --- VEHICLE METHODS
+    test: a
+    .query()
+    .arguments({
+      name: a.string(),
+    })
+    .returns(a.string())
+    .handler(a.handler.function(test))
+    .authorization((allow) => [allow.publicApiKey()]),
 });
 
 export type Schema = ClientSchema<typeof schema>;
