@@ -11,8 +11,11 @@
 	},
 	"dependencies": {
 		"@aws-amplify/ui-react": "^6.8.0",
+		"@nextui-org/autocomplete": "^2.3.9",
 		"@nextui-org/button": "2.2.8",
+		"@nextui-org/card": "^2.2.9",
 		"@nextui-org/code": "2.2.5",
+		"@nextui-org/drawer": "^2.2.7",
 		"@nextui-org/dropdown": "2.3.3",
 		"@nextui-org/input": "2.4.7",
 		"@nextui-org/kbd": "2.2.5",
@@ -23,6 +26,7 @@
 		"@nextui-org/system": "2.4.5",
 		"@nextui-org/table": "^2.2.8",
 		"@nextui-org/theme": "2.4.4",
+		"@nextui-org/use-disclosure": "^2.2.2",
 		"@react-aria/visually-hidden": "3.8.12",
 		"@react-types/shared": "3.26.0",
 		"aws-amplify": "^6.11.0",
@@ -37,7 +41,7 @@
 		"ts-algebra": "^2.0.0"
 	},
 	"devDependencies": {
-		"@aws-amplify/backend": "^1.5.0",
+		"@aws-amplify/backend": "^1.14.0",
 		"@aws-amplify/backend-cli": "^1.2.9",
 		"@types/node": "20.5.7",
 		"@types/react": "18.3.3",
@@ -46,7 +50,7 @@
 		"@typescript-eslint/parser": "8.11.0",
 		"@vitejs/plugin-react": "^4.2.1",
 		"autoprefixer": "10.4.19",
-		"aws-cdk": "^2.138.0",
+		"aws-cdk": "^2.177.0",
 		"aws-cdk-lib": "^2.138.0",
 		"eslint": "^8.57.0",
 		"eslint-config-prettier": "9.1.0",
