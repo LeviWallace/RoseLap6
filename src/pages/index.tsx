@@ -4,21 +4,11 @@ import bg from "@/assets/bg.mp4";
 import { Link } from "react-router-dom";
 import { Button } from "@nextui-org/button";
 import { Amplify } from "aws-amplify"
-import type { Schema } from "../../amplify/data/resource"
-import { generateClient } from "aws-amplify/api"
 import outputs from "./../../amplify_outputs.json"
 
 Amplify.configure(outputs)
 
-const client = generateClient<Schema>()
-
 export default function IndexPage() {
-
-  const test = () => {
-    client.queries.test({
-      name: "Amplify",
-    })
-  }
 
   return (
     <div className="bg-background">
@@ -31,7 +21,6 @@ export default function IndexPage() {
             <h1 className="text-5xl text-left font-bold text-foreground">Experience our breath-taking simulation technology</h1>
             <div className="mt-10 flex justify-start">
               <Button as={Link}
-                      onPress={test}
                       href="/login" className="text-foreground text-md px-6" color="primary" size="lg" radius="full">Check it out</Button>
             </div>
           </div>
