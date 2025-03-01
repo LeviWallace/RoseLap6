@@ -4,11 +4,15 @@ import { confirmSignUp, signIn, signUp } from 'aws-amplify/auth'
 import { Button } from "@nextui-org/button";
 import { Input } from "@nextui-org/input";
 import { useNavigate } from "react-router-dom";
+import type { Schema } from "../../amplify/data/resource"
+import { generateClient } from "aws-amplify/api"
 import outputs from "../../amplify_outputs.json";
 import { Amplify } from "aws-amplify";
 import { EyeFilledIcon, EyeSlashFilledIcon } from "@/components/icons";
 
 Amplify.configure(outputs)
+const client = generateClient<Schema>();
+
 
 const RegisterForm = ({ onNextStep }: { onNextStep: (nextStep: string, details?: any) => void }) => {
     const [firstName, setFirstName] = useState("");
@@ -41,21 +45,12 @@ const RegisterForm = ({ onNextStep }: { onNextStep: (nextStep: string, details?:
     const handleRegister = async (e: React.FormEvent) => {
         e.preventDefault();
         
-        try {
-            const { nextStep } = await signUp({
-                username: email,
-                password: password,
-                options: {
-                    userAttributes: {
-                        'custom:firstName': firstName,
-                        'custom:lastName': lastName,
-                    },
-                },
-            })
-            console.log(nextStep);
-            onNextStep(nextStep.signUpStep, { email, nextStep });
-        } catch (error: any) {
-            setErrorMessage(error.message)
+        const result = await client.queries.registerUser({email, password, firstName, lastName});
+        console.log(result)
+        if (result.data && !result.data.error && typeof result.data.nextStep === 'string') {
+            onNextStep(result.data.nextStep, { email, nextStep: result.data.nextStep });
+        } else {
+            setErrorMessage(result.data?.error || "An unknown error occurred");
         }
     }
 
