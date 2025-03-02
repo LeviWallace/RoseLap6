@@ -1,10 +1,21 @@
 import Footer from "@/components/footer";
-import { Navbar } from "@/components/navbar";
+import Navbar from "@/components/navbar";
 import { useNavigate } from "react-router-dom";
 
+/**
+ * LandingPage component renders the landing page with three sections: Tracks, Sweeps, and Vehicles.
+ * Each section expands on hover and navigates to a different route when clicked.
+ *
+ * @component
+ * @example
+ * return (
+ *   <LandingPage />
+ * )
+ *
+ * @returns {JSX.Element} The rendered landing page component.
+ */
 export default function LandingPage() {
     const navigate = useNavigate();
-
     return (
         <>
             <Navbar />

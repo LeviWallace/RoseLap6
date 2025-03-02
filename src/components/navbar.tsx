@@ -1,42 +1,25 @@
-import { Button } from "@nextui-org/button";
-import { Link } from "@nextui-org/link";
+import { Link } from "@heroui/link";
 import { Navbar as NextUINavbar,
   NavbarBrand,
   NavbarContent,
   NavbarItem,
-} from "@nextui-org/navbar";
+} from "@heroui/navbar";
 import { siteConfig } from "@/config/site";
-import { Dropdown, DropdownTrigger, DropdownMenu, DropdownSection, DropdownItem } from "@nextui-org/dropdown";
 import { ThemeSwitch } from "./theme-switch";
-import { useEffect, useState } from "react";
-import { signOut, fetchUserAttributes } from "aws-amplify/auth";
+import NavbarDropdown from "./navbar-dropdown";
 
+/**
+ * Navbar component that renders a navigation bar with brand name, navigation items, and additional controls.
+ *
+ * @returns {JSX.Element} The rendered Navbar component.
+ *
+ * @component
+ * @example
+ * // Example usage:
+ * <Navbar />
+ */
 
-export const Navbar = () => {
-  const [username, setUsername] = useState<string | null>("");
-
-  const handleGetLoginUser = async () => {
-    try {
-      const user: any = await fetchUserAttributes();
-      setUsername(user['custom:firstName']);
-    } catch (error) {
-      setUsername(null);
-    }
-  }
-
-  const handleLogout = async () => {
-    try {
-      await signOut();
-      setUsername(null)
-    } catch (error) {
-      console.log(error)
-    }
-  }
-
-  useEffect(() => {
-    handleGetLoginUser();
-  }, []);
-
+export default function Navbar() {
   return (
     <NextUINavbar className="bg-transparent" isBlurred={false} shouldHideOnScroll maxWidth="full" position="sticky">
     <NavbarBrand>
@@ -67,60 +50,9 @@ export const Navbar = () => {
       </NavbarContent>
 
       <NavbarContent justify="end" className="isolate">
-      <NavbarItem>
-          {
-            username == null ?
-              (
-                <Button as={Link} color="primary" size="lg" radius="full" href="/login">Log In</Button>
-              ) 
-              :
-              (
-                <Dropdown
-                  showArrow
-                  classNames={{
-                    base: "before:", // change arrow background
-                    content: "border border-white bg-background",
-                  }}>
-                  <DropdownTrigger>
-                    <Button
-                      color="primary" size="lg" radius="full"
-                    >
-                      {username !== "" ? `Hello, ${username}` : "Loading..."}
-                    </Button>
-                  </DropdownTrigger>
-                  <DropdownMenu aria-label="Static Actions">
-                    <DropdownSection showDivider className="">
-                      {siteConfig.dropdownAccountItems.map((item) => (
-                        <DropdownItem color="primary" key={item.href} description="View Account Settings">
-                          <Link
-                            color="foreground"
-                            href={item.href}
-                          >
-                            {item.label}
-                          </Link>
-                        </DropdownItem>
-                      ))}
-                    </DropdownSection>
-                    <DropdownSection showDivider>
-                      {siteConfig.dropdownItems.map((item) => (
-                        <DropdownItem color="primary" key={item.href}>
-                          <Link
-                            color="foreground"
-                            href={item.href}
-                          >
-                            {item.label}
-                          </Link>
-                      </DropdownItem>
-                      ))}
-                    </DropdownSection>
-                    <DropdownItem key="delete" className="text-primary" color="secondary" onPress={handleLogout}>
-                      Logout
-                    </DropdownItem>
-                  </DropdownMenu>
-                </Dropdown>
-              )}
+        <NavbarItem>
+          <NavbarDropdown />
         </NavbarItem>
-
         <NavbarItem>
           <ThemeSwitch />
         </NavbarItem>

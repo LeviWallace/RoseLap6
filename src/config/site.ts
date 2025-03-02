@@ -3,6 +3,19 @@ export type SiteConfig = typeof siteConfig;
 export const siteConfig = {
   name: "RoseLap6",
   description: "A Laptime Simulation Tool used for Rose-Hulman's GPE Team",
+  login: {
+    label: "Sign In",
+    href: "/auth",
+  },
+  logout: {
+    label: "Sign Out",
+    href: "/",
+  },
+  account: {
+    label: "My Account",
+    sublabel: "View Account Settings",
+    href: "/landing",
+  },
   navItems: [
     {
       label: "Home",
@@ -15,7 +28,7 @@ export const siteConfig = {
     {
       label: "History",
       href: "/history",
-    }
+    },
   ],
   accountItems: [
     {
@@ -29,7 +42,7 @@ export const siteConfig = {
     {
       label: "Previous Sweeps",
       href: "/landing/sweeps",
-    }
+    },
   ],
   links: [
     {
@@ -53,6 +66,7 @@ export const siteConfig = {
       href: "https://linktr.ee/rosegpeofficial",
    },
   ],
+  
   help: [
     {
       label: "Q&As",

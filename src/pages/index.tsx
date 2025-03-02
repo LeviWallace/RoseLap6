@@ -1,13 +1,19 @@
-import { Navbar } from "@/components/navbar";
+import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
 import bg from "@/assets/bg.mp4";
 import { Link } from "react-router-dom";
-import { Button } from "@nextui-org/button";
+import { Button } from "@heroui/button";
 import { Amplify } from "aws-amplify"
 import outputs from "./../../amplify_outputs.json"
 
 Amplify.configure(outputs)
 
+/**
+ * The `IndexPage` component serves as the main landing page for the application.
+ * It includes a full-screen background video, a navigation bar, and a call-to-action section.
+ * 
+ * @returns {JSX.Element} The rendered component.
+ */
 export default function IndexPage() {
 
   return (

@@ -1,5 +1,4 @@
 import { type ClientSchema, a, defineData } from "@aws-amplify/backend";
-import { registerUser } from "../functions/registerUser/resource";
 
 const schema = a.schema({
   // BACKEND DATABASE
@@ -131,22 +130,6 @@ const schema = a.schema({
     .authorization((allow) => [allow.publicApiKey()]),
 
     // FUNCTIONS
-    // --- VEHICLE METHODS
-    registerUser: a
-    .query()
-    .arguments({
-      email: a.string(),
-      password: a.string(),
-      firstName: a.string(),
-      lastName: a.string(),
-    })
-    .returns(a.customType({
-      nextStep: a.string(),
-      error: a.string(),
-    })
-    )
-    .handler(a.handler.function(registerUser))
-    .authorization((allow) => [allow.publicApiKey()]),
 });
 
 export type Schema = ClientSchema<typeof schema>;
