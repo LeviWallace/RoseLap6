@@ -35,7 +35,7 @@ export default function AuthenticationPage()
 {
     const navigate = useNavigate();
 
-    const [step, setStep] = useState(Step.REGISTER); // Initial step
+    const [step, setStep] = useState(Step.LOGIN); // Initial step
 
     const [userEmail, setUserEmail] = useState(""); // Used to hold account information across pages
 
