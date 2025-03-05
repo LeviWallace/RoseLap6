@@ -119,6 +119,7 @@ const schema = a.schema({
     .model({
       name: a.string(),
       country: a.string(),
+      state: a.string(),
       city: a.string(),
       direction: a.boolean(),
       mirror: a.boolean(),
