@@ -2,70 +2,106 @@ import { Button } from '@heroui/button';
 import {Modal, ModalBody, ModalContent, ModalFooter, ModalHeader} from '@heroui/modal';
 import { type Schema } from '@/../amplify/data/resource';
 import { generateClient } from 'aws-amplify/api';
+import { useState } from 'react';
+import { Input } from '@heroui/input';
 
 const client = generateClient<Schema>();
 
 
+
+/**
+ * TrackAddModal component allows users to add a new track by providing necessary details
+ * such as name, country, state, and city. It displays a modal with input fields for each
+ * detail and a button to submit the form.
+ *
+**/
 export default function TrackAddModal({isOpen, onClose, updateCallback}: {isOpen: boolean, onClose: () => void, updateCallback: () => void}) {
+    const [track, setTrack] = useState({
+        name: "",
+        country: "",
+        state: "",
+        city: "",
+        direction: false,
+        mirror: false,
+        shape: [],
+        elevation: [],
+        banking: [],
+    });
+    
     async function handleAddTrack() {
         const { errors, data } = await client.models.Track.create({
-            name: "My Track 2",
-            country: "United States of America",
-            state: "New York",
-            city: "New York",
-            direction: true,
-            mirror: false,
-            shape: [
-                { type: "Straight", length: 100 },
-                { type: "RightTurn", length: 100, cornerRadius: 50 },
-                { type: "Straight", length: 100 },
-                { type: "LeftTurn", length: 100, cornerRadius: 50 },
-            ],
-            elevation: [
-                { point: 0, elevation: 0 },
-                { point: 100, elevation: 0 },
-                { point: 200, elevation: 0 },
-            ],
-            banking: [
-                { point: 0, banking: 0 },
-                { point: 100, banking: 0 },
-                { point: 200, banking: 0 },
-            ],
+            name: track["name"],
+            country: track["country"],
+            state: track["state"],
+            city: track["city"],
+            direction: track["direction"],
+            mirror: track["mirror"],
+            shape: track["shape"],
+            elevation: track["elevation"],
+            banking: track["banking"],
         })
         console.log(errors, data);
         updateCallback();
         return;
     }
 
+    function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+        const { name, value } = e.target;
+        setTrack((prev) => ({ ...prev, [name]: value }));
+    }
+
+
     return (
         <Modal isOpen={isOpen} size='lg' onClose={onClose} radius='none'>
-        <ModalContent>
+        <ModalContent className="border-white border-1 bg-background">
           {(onClose) => (
             <>
-              <ModalHeader className="flex flex-col justify-center gap-1">Add Track</ModalHeader>
+              <ModalHeader className="justify-center">Add Track</ModalHeader>
               <ModalBody>
-                <p>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam pulvinar risus non
-                  risus hendrerit venenatis. Pellentesque sit amet hendrerit risus, sed porttitor
-                  quam.
-                </p>
-                <p>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam pulvinar risus non
-                  risus hendrerit venenatis. Pellentesque sit amet hendrerit risus, sed porttitor
-                  quam.
-                </p>
-                <p>
-                  Magna exercitation reprehenderit magna aute tempor cupidatat consequat elit dolor
-                  adipisicing. Mollit dolor eiusmod sunt ex incididunt cillum quis. Velit duis sit
-                  officia eiusmod Lorem aliqua enim laboris do dolor eiusmod.
-                </p>
+                <Input
+                  name="name"
+                  value={track.name}
+                  onChange={handleChange}
+                  className="mb-4"
+                  placeholder="Enter track name"
+                  type="text"
+                  label="Name"
+                  variant="underlined"
+                />
+                <Input
+                  name="country"
+                  value={track.country}
+                  onChange={handleChange}
+                  className="mb-4"
+                  placeholder="Enter country name"
+                  type="text"
+                  label="Country"
+                  variant="underlined"
+                />
+                <Input
+                  name="state"
+                  value={track.state}
+                  onChange={handleChange}
+                  className="mb-4"
+                  placeholder="Enter state name"
+                  type="text"
+                  label="State"
+                  variant="underlined"
+                />
+                <Input
+                  name="city"
+                  value={track.city}
+                  onChange={handleChange}
+                  className="mb-4"
+                  placeholder="Enter city name"
+                  type="text"
+                  label="City"
+                  variant="underlined"
+                />
               </ModalBody>
-              <ModalFooter>
-                <Button color="danger" variant="light" onPress={onClose}>
-                  Close
-                </Button>
+              <ModalFooter className="justify-end">
                 <Button color="primary" onPress={() => { handleAddTrack(); onClose(); }}>
-                  Action
+                  Add
                 </Button>
               </ModalFooter>
             </>

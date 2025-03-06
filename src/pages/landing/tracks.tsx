@@ -12,6 +12,18 @@ const client = generateClient<Schema>();
 
 type Track = Schema['Track']['type'];
 
+/**
+ * TracksPage component is responsible for displaying and managing a list of tracks.
+ * It includes functionalities for fetching tracks, searching tracks, and adding new tracks.
+ *
+ * @component
+ * @example
+ * return (
+ *   <TracksPage />
+ * )
+ *
+ * @returns {JSX.Element} The rendered component.
+ */
 export default function TracksPage() {
     const [tracks, setTracks] = useState<Track[]>([]);
     const [search, setSearch] = useState<string>("");
@@ -56,28 +68,33 @@ export default function TracksPage() {
         onOpen();
     }
 
+    function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
+        setSearch(e.target.value);
+        handleSearchTracks();
+    }
+
     return (
         <>
         <TrackAddModal isOpen={isOpen} onClose={onClose} updateCallback={handleGetTracks}></TrackAddModal>
         <DefaultLayout>
-            <div className="flex justify-between items-center space-x-2">
-                <Input
-                    name="password"
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    className="my-7 px-4"
-                    placeholder="Search All Tracks.."
-                    type="text"
-                    label="Password"
-                    variant="bordered"
-                    classNames={{
-                        input: ["bg-transparent", "text-foreground", "placeholder:text-grey"],
-                        inputWrapper: "border-1 border-foreground rounded-none",
-                    }}/>
-                <Button onPress={handleSearchTracks}>Search</Button>
-                <Button onPress={() => handleTrackAddModal()}>Add Track</Button>
+            <div className="grid grid-cols-12"></div>
+                <div className="flex justify-between items-center space-x-2">
+                    <Input
+                        name="password"
+                        value={search}
+                        onChange={handleInputChange}
+                        className="my-7 px-4"
+                        placeholder="Search All Tracks.."
+                        type="text"
+                        label="Password"
+                        variant="underlined"
+                    />
+                    <Button onPress={handleSearchTracks}>Search</Button>
+                    <Button onPress={() => handleTrackAddModal()}>Add Track</Button>
+                </div>
+            <div className="grid grid-cols12">
+                <TrackContainer tracks={tracks} updateCallback={handleGetTracks}/>
             </div>
-            <TrackContainer tracks={tracks} updateCallback={handleGetTracks}/>
         </DefaultLayout>
         </>
     )

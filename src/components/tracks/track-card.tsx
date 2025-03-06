@@ -12,6 +12,13 @@ interface TrackProps {
 
 const client = generateClient<Schema>();
 
+/**
+ * TrackCard component renders a card displaying track information and provides options to delete, mount, or view the track.
+ *
+ * @component
+ * @param {TrackProps} props - The properties object.
+ * @returns {JSX.Element} The TrackCard component.
+ */
 export default function TrackCard({track, updateCallback}: TrackProps) {
 
     async function handleDeleteTrack() {
@@ -21,7 +28,7 @@ export default function TrackCard({track, updateCallback}: TrackProps) {
     }
 
     return (
-        <Card className="border rounded-none m-2">
+        <Card className="border rounded-none m-2 bg-background">
             <CardHeader className="justify-between">
                 <h1 className="text-2xl font-extrabold">{track.name}</h1>
             </CardHeader>
