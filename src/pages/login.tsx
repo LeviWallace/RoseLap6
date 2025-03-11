@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import DefaultLayout from "@/layouts/default";
 import { confirmSignUp, signIn, signUp } from 'aws-amplify/auth'
-import { Button } from "@nextui-org/button";
-import { Input } from "@nextui-org/input";
+import { Button } from "@heroui/button";
+import { Input } from "@heroui/input";
 import { useNavigate } from "react-router-dom";
 import outputs from "../../amplify_outputs.json";
 import { Amplify } from "aws-amplify";

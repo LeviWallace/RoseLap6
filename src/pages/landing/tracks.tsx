@@ -1,5 +1,5 @@
 import DefaultLayout from "@/layouts/default";
-import { Button } from "@nextui-org/button";
+import { Button } from "@heroui/button";
 
 export default function TracksPage() {
     return (

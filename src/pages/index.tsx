@@ -2,7 +2,7 @@ import { Navbar } from "@/components/navbar";
 import Footer from "@/components/footer";
 import bg from "@/assets/bg.mp4";
 import { Link } from "react-router-dom";
-import { Button } from "@nextui-org/button";
+import { Button } from "@heroui/button";
 import { Amplify } from "aws-amplify"
 import type { Schema } from "../../amplify/data/resource"
 import { generateClient } from "aws-amplify/api"

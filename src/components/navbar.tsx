@@ -1,11 +1,11 @@
-import { Button } from "@nextui-org/button";
-import { Link } from "@nextui-org/link";
+import { Button } from "@heroui/button";
+import { Link } from "@heroui/link";
 import {
   Navbar as NextUINavbar,
   NavbarBrand,
   NavbarContent,
   NavbarItem,
-} from "@nextui-org/navbar";
+} from "@heroui/navbar";
 import { siteConfig } from "@/config/site";
 import {
   Dropdown,
@@ -13,7 +13,7 @@ import {
   DropdownMenu,
   DropdownSection,
   DropdownItem,
-} from "@nextui-org/dropdown";
+} from "@heroui/dropdown";
 import { ThemeSwitch } from "./theme-switch";
 import { useEffect, useState } from "react";
 import { signOut, fetchUserAttributes } from "aws-amplify/auth";
