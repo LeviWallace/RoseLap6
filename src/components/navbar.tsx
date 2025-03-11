@@ -65,18 +65,6 @@ export const Navbar = () => {
         </Link>
       </NavbarBrand>
 
-      <div className="mix-blend-difference">
-        {siteConfig.navItems.map((item) => (
-          <a
-            color="foreground"
-            className="text-lg font-semibold tracking-tight"
-            href={item.href}
-          >
-            {item.label}
-          </a>
-        ))}
-      </div>
-
       <NavbarContent
         justify="center"
         className="relative z-10 bg-inherit mix-blend-difference"
