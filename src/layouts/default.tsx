@@ -9,11 +9,8 @@ export default function DefaultLayout({
   return (
     <div className="relative min-h-screen flex flex-col bg-background">
       <Navbar />
-      <main className="container pt-4 mx-auto">
-        {children}
-      </main>
+      <main className="container pt-4 mx-auto">{children}</main>
       <Footer />
-      
     </div>
   );
 }
