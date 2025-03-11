@@ -66,31 +66,10 @@ export const siteConfig = {
       href: "https://linktr.ee/rosegpeofficial",
    },
   ],
-  
   help: [
     {
       label: "Q&As",
       href: "/somewhere",
     },
   ],
-  dropdownAccountItems: [
-    {
-      label: "My Account",
-      href: "/my/account",
-    },
-  ],
-  dropdownItems: [
-    {
-      label: "Vehicles",
-      href: "/my/vehicles",
-    },
-    {
-      label: "Tracks",
-      href: "/my/tracks",
-   },
-   {
-      label: "Sweeps",
-      href: "/my/sweeps",
-   },
-  ]
 };

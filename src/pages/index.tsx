@@ -19,11 +19,11 @@ export default function IndexPage() {
   return (
     <div className="bg-background">
       <div className="h-screen w-full">
-        <video className="absolute top-0 object-cover -z-5 mix-blend-difference" src={bg} loop muted autoPlay></video>
+        <video className="absolute top-0 object-cover -z-5 mix-blend-difference min-h-screen" src={bg} loop muted autoPlay></video>
         <Navbar />
 
         <div className="flex flex-row m-10 mx-20 z-10 relative h-max">
-          <div className="bg-background rounded-radius z-20 p-8 rounded-radius border-1 border-foreground w-2/5">
+          <div className="bg-background rounded-radius z-20 p-8 rounded-radius border-1 border-foreground sm:w-4/5 md:w-3/5 lg:w-2/5">
             <h1 className="text-5xl text-left font-bold text-foreground">Experience our breath-taking simulation technology</h1>
             <div className="mt-10 flex justify-start">
               <Button as={Link}
