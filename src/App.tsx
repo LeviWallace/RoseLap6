@@ -7,8 +7,7 @@ import AuthenticationPage from "@/pages/auth";
 import LandingPage from "@/pages/landing";
 // import VehiclesPage from "@/pages/landing/vehicles";
 import TracksPage from "./pages/landing/tracks";
-
-
+import ComponentsPage from "./pages/landing/components";
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const [authenticated, setAuthenticated] = useState<boolean | null>(null);
@@ -53,7 +52,7 @@ function App() {
 
       {/* Personal Account */}
       <Route element={<TracksPage />} path="/landing/tracks" />
-
+      <Route element={<ComponentsPage />} path="/landing/components" />
     </Routes>
   );
 }

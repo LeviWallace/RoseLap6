@@ -6,7 +6,10 @@ import { useEffect, useState } from "react";
 import { Button } from "@heroui/button";
 import { Input } from "@heroui/input";
 import { useDisclosure } from "@heroui/modal";
-// import ComponentsAddModal from "@/components/components/components-add-modal";
+import ComponentAddModal from "@/components/components/component-add-modal";
+import ComponentContainer from "@/components/components/component-container";
+import { Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from "@heroui/dropdown";
+
 
 const client = generateClient<Schema>();
 
@@ -35,6 +38,7 @@ export default function ComponentsPage() {
         components: [] as Component[],
         search: "",
         selectedComponents: [] as boolean[],
+        type: ""
     });
     const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -131,7 +135,8 @@ export default function ComponentsPage() {
     }, [componentData.search, componentData.selectedComponents]);
 
     
-    function handleComponentsAddModal(): void {
+    function handleComponentsAddModal(type: string): void {
+        setComponentData((prevData) => ({ ...prevData, type: type}));
         onOpen();
     }
 
@@ -141,25 +146,51 @@ export default function ComponentsPage() {
 
     return (
         <>
-        <ComponentsAddModal isOpen={isOpen} onClose={onClose} updateCallback={handleGetComponentss}></ComponentsAddModal>
+        <ComponentAddModal isOpen={isOpen} onClose={onClose} updateCallback={handleGetComponents} type={componentData.type}></ComponentAddModal>
         <DefaultLayout>
             <div className="grid grid-cols-12"></div>
                 <div className="flex justify-between items-center space-x-2">
                     <Input
-                        name="password"
-                        value={search}
+                        name="component-search"
+                        value={componentData.search}
                         onChange={handleInputChange}
                         className="my-7 px-4"
-                        placeholder="Search All Componentss.."
+                        placeholder="Search All Components..."
                         type="text"
-                        label="Password"
                         variant="underlined"
                     />
-                    <Button onPress={handleSearchComponentss}>Search</Button>
-                    <Button onPress={() => handleComponentsAddModal()}>Add Components</Button>
+                    <Dropdown
+                        showArrow
+                        classNames={{
+                            base: "before:", // change arrow background
+                            content: "border border-white bg-background",
+                        }}>
+                        <DropdownTrigger>
+                            <Button>
+                                Add Component
+                            </Button>
+                        </DropdownTrigger>
+                        <DropdownMenu aria-label="Static Actions">
+                            <DropdownItem key={"type"} onPress={() => handleComponentsAddModal("tire")}>
+                                Tire
+                            </DropdownItem>
+                            <DropdownItem key={"type"} onPress={() => handleComponentsAddModal("brakes")}>
+                                Brakes
+                            </DropdownItem>
+                            <DropdownItem key={"type"} onPress={() => handleComponentsAddModal("aerodynamics")}>
+                                Aerodynamics
+                            </DropdownItem>
+                            <DropdownItem key={"type"} onPress={() => handleComponentsAddModal("engine")}>
+                                Engine
+                            </DropdownItem>
+                            <DropdownItem key={"type"} onPress={() => handleComponentsAddModal("transmission")}>
+                                Transmission
+                            </DropdownItem>
+                        </DropdownMenu>
+                    </Dropdown>
                 </div>
             <div className="grid grid-cols12">
-                <ComponentsContainer componentss={componentss} updateCallback={handleGetComponentss}/>
+                <ComponentContainer components={componentData.components} updateCallback={handleGetComponents}/>
             </div>
         </DefaultLayout>
         </>

@@ -55,19 +55,17 @@ export default function NavbarDropdown() {
             </DropdownTrigger>
             <DropdownMenu aria-label="Static Actions">
                 <DropdownSection showDivider className="">
-                    {siteConfig.dropdownAccountItems.map((item) => (
-                        <DropdownItem color="primary" key={item.href} description={siteConfig.account.sublabel}>
-                            <Link
-                                color="foreground"
-                                href={item.href}
-                            >
-                                {item.label}
-                            </Link>
-                        </DropdownItem>
-                    ))}
+                    <DropdownItem color="primary" key={siteConfig.account.href} description={siteConfig.account.sublabel}>
+                        <Link
+                            color="foreground"
+                            href={siteConfig.account.href}
+                        >
+                            {siteConfig.account.label}
+                        </Link>
+                    </DropdownItem>
                 </DropdownSection>
                 <DropdownSection showDivider>
-                    {siteConfig.dropdownItems.map((item) => (
+                    {siteConfig.accountItems.map((item) => (
                         <DropdownItem color="primary" key={item.href}>
                             <Link
                                 color="foreground"
