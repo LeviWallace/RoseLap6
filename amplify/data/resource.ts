@@ -8,8 +8,6 @@ const schema = a.schema({
       name: a.string(),
       mass: a.float(),
       frontMassDistribution: a.float(),
-      wheelbase: a.float(),
-      steeringRackRatio: a.float(),
       
       tireId: a.id(),
       aerodynamicsId: a.id(),
