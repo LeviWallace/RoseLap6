@@ -18,6 +18,9 @@ import { ThemeSwitch } from "./theme-switch";
 import { useEffect, useState } from "react";
 import { signOut, fetchUserAttributes } from "aws-amplify/auth";
 
+// New import to change the color of the navbar items depending on which page
+import { useLocation } from "react-router-dom";
+
 export const Navbar = () => {
   const [username, setUsername] = useState<string | null>("");
 
@@ -42,6 +45,11 @@ export const Navbar = () => {
   useEffect(() => {
     handleGetLoginUser();
   }, []);
+
+  //New variables for navbar item color
+  const location = useLocation();
+  const isHistoryPage = location.pathname === "/history";
+  const navTextColor = isHistoryPage ? "text-black" : "text-white";
 
   return (
     <NextUINavbar
@@ -74,7 +82,7 @@ export const Navbar = () => {
             <NavbarItem key={item.href}>
               <Link
                 color="foreground"
-                className="text-lg font-semibold tracking-tight"
+                className={`text-lg font-semibold tracking-tight ${navTextColor}`}
                 href={item.href}
               >
                 {item.label}
