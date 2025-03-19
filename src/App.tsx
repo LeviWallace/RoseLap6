@@ -9,7 +9,7 @@ import LandingPage from "@/pages/landing";
 import TracksPage from "./pages/landing/tracks";
 import ComponentsPage from "./pages/landing/components";
 import VehiclesPage from "./pages/landing/vehicles";
-
+import SweepsPage from "./pages/landing/sweeps";
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const [authenticated, setAuthenticated] = useState<boolean | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -55,6 +55,7 @@ function App() {
       <Route element={<TracksPage />} path="/landing/tracks" />
       <Route element={<ComponentsPage />} path="/landing/components" />
       <Route element={<VehiclesPage />} path="/landing/vehicles" />
+      <Route element={<SweepsPage />} path="/landing/sweeps" />
     </Routes>
   );
 }
