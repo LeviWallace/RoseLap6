@@ -135,6 +135,13 @@ const schema = a.schema({
 	})
 	.authorization((allow) => [allow.publicApiKey()]),
 
+
+	Mount: a.model({
+		accountId: a.id().required(),
+		vehicleId: a.id(),
+		trackId: a.id(),
+	}).identifier(['accountId']).authorization((allow) => [allow.owner()]),
+
 		// FUNCTIONS
 
 	sayHello: a
