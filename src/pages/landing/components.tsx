@@ -171,19 +171,19 @@ export default function ComponentsPage() {
                             </Button>
                         </DropdownTrigger>
                         <DropdownMenu aria-label="Static Actions">
-                            <DropdownItem key={"type"} onPress={() => handleComponentsAddModal("tire")}>
+                            <DropdownItem key={"tire"} onPress={() => handleComponentsAddModal("tire")}>
                                 Tire
                             </DropdownItem>
-                            <DropdownItem key={"type"} onPress={() => handleComponentsAddModal("brakes")}>
+                            <DropdownItem key={"brakes"} onPress={() => handleComponentsAddModal("brakes")}>
                                 Brakes
                             </DropdownItem>
-                            <DropdownItem key={"type"} onPress={() => handleComponentsAddModal("aerodynamics")}>
+                            <DropdownItem key={"aerodynamics"} onPress={() => handleComponentsAddModal("aerodynamics")}>
                                 Aerodynamics
                             </DropdownItem>
-                            <DropdownItem key={"type"} onPress={() => handleComponentsAddModal("engine")}>
+                            <DropdownItem key={"engine"} onPress={() => handleComponentsAddModal("engine")}>
                                 Engine
                             </DropdownItem>
-                            <DropdownItem key={"type"} onPress={() => handleComponentsAddModal("transmission")}>
+                            <DropdownItem key={"transmission"} onPress={() => handleComponentsAddModal("transmission")}>
                                 Transmission
                             </DropdownItem>
                         </DropdownMenu>

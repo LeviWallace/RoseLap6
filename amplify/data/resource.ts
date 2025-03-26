@@ -21,7 +21,7 @@ const schema = a.schema({
 
 		Tire: a
 	.model({
-		type: a.string().default("TireComponent"),
+		type: a.string().default("Tire"),
 		name: a.string(),
 		wheelBase: a.float(),
 		stearingRackRatio: a.float(),
@@ -41,7 +41,7 @@ const schema = a.schema({
 
 		Aerodynamics: a
 	.model({
-		type: a.string().default("AerodynamicsComponent"),
+		type: a.string().default("Aerodynamic"),
 		name: a.string(),
 		liftCoefficientCL: a.float(),
 		dragCoefficientCD: a.float(),
@@ -56,7 +56,7 @@ const schema = a.schema({
 
 		Brakes: a
 	.model({
-		type: a.string().default("BrakesComponent"),
+		type: a.string().default("Brake"),
 		name: a.string(),
 		discOuterDiameter: a.float(),
 		padHeight: a.float(),
@@ -70,7 +70,7 @@ const schema = a.schema({
 
 		Engine: a
 	.model({
-		type: a.string().default("EngineComponent"),
+		type: a.string().default("Engine"),
 		name: a.string(),
 		powerFactorMultiplier: a.float(),
 		thermalEfficiency: a.float(),
@@ -80,7 +80,7 @@ const schema = a.schema({
 
 		Transmission: a
 	.model({
-		type: a.string().default("TransmissionComponent"),
+		type: a.string().default("Transmission"),
 		name: a.string(),
 		driveType: a.enum(["FrontWheelDrive", "RearWheelDrive", "AllWheelDrive"]),
 		finalDriveRatio: a.float(),
@@ -96,7 +96,7 @@ const schema = a.schema({
 
 		TorqueCurve: a
 	.model({
-		type: a.string().default("TorqueCurveComponent"),
+		type: a.string().default("Torque Curve"),
 		name: a.string(),
 		rpms: a.float().array(),
 		torques: a.float().array(),

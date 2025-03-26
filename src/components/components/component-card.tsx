@@ -21,9 +21,25 @@ const client = generateClient<Schema>();
 
 export default function ComponentCard({component, updateCallback}: ComponentProps) {
 
-    async function handleDeleteTrack() {
-        const { errors, data } = await client.models.Tire.delete({ id: component.id });
-        console.log(errors, data);
+    async function handleDeleteComponent() {
+		console.log(component);
+		switch (component.type) {
+			case 'Brakes':
+				await client.models.Brakes.delete({ id: component.id });
+				break;
+			case 'Engine':
+				await client.models.Engine.delete({ id: component.id });
+				break;
+			case 'Tire':
+				await client.models.Tire.delete({ id: component.id });
+				break;
+			case 'Transmission':
+				await client.models.Transmission.delete({ id: component.id });
+				break;
+			case 'Aerodynamics':
+				await client.models.Aerodynamics.delete({ id: component.id });
+				break;
+		}
         updateCallback();
     }
 
@@ -36,14 +52,11 @@ export default function ComponentCard({component, updateCallback}: ComponentProp
                 <h2>{component.type}</h2>
             </CardBody>
             <CardFooter className="justify-between">
-                <Button color="danger" size="sm" onPress={handleDeleteTrack}>
-                    Delete Track
-                </Button>
-                <Button color="secondary" size="sm">
-                    Mount Track
+                <Button color="danger" size="sm" onPress={handleDeleteComponent}>
+                    Delete {component.type}
                 </Button>
                 <Button color="primary" size="sm">
-                    View Track
+                    View {component.type}
                 </Button>
             </CardFooter>
         </Card>
