@@ -1,5 +1,6 @@
 import { Button } from "@heroui/button";
 import { Input } from "@heroui/input";
+import { Divider } from "@heroui/divider";
 import { ModalHeader, ModalBody, ModalFooter } from "@heroui/modal";
 import { generateClient } from "aws-amplify/api";
 import { useState } from "react";
@@ -33,24 +34,73 @@ export default function AddEngineComponent({ onClose, updateCallback }: { onClos
             <ModalHeader className="justify-center">Add Engine</ModalHeader>
             <ModalBody>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    {Object.entries(engine).map(([key, value]) => (
-                        <Input
-                            key={key}
-                            name={key}
-                            label={key}
-                            value={value}
-                            variant="bordered"
-                            classNames={{
-                            input: ["bg-transparent", "text-foreground", "placeholder:text-grey"],
-                            inputWrapper: "border-1 border-foreground rounded-none",
-                            }}
-                            onChange={(e) => {
-                            const { name, value } = e.target;
-                            setEngine((prev) => ({ ...prev, [name]: value }));
-                            }}
-                            />
-                        ))}
-            </div>
+				<Input
+					key={"name"}
+					name={"name"}
+					label={"Name"}
+					value={engine.name}
+					variant="bordered"
+					classNames={{
+					input: ["bg-transparent", "text-foreground", "placeholder:text-grey"],
+					inputWrapper: "border-1 border-foreground rounded-none",
+					}}
+					onChange={(e) => {
+					const { name, value } = e.target;
+					setEngine((prev) => ({ ...prev, [name]: value }));
+					}}
+				/>
+				</div>
+				<Divider />
+				<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+				<Input
+				 key={"powerFactorMultiplier"}
+				 name={"powerFactorMultiplier"}
+				 label={"Power Factor Multiplier"}
+				 value={engine.powerFactorMultiplier}
+				 variant="bordered"
+				 classNames={{
+					input: ["bg-transparent", "text-foreground", "placeholder:text-grey"],
+					inputWrapper: "border-1 border-foreground rounded-none",
+				 }}
+				 onChange={(e) => {
+					const { name, value } = e.target;
+					setEngine((prev) => ({ ...prev, [name]: value }));
+				 }
+				 }
+				 />
+				<Input
+				 key={"thermalEfficiency"}
+				 name={"thermalEfficiency"}
+				 label={"Thermal Efficiency"}
+				 value={engine.thermalEfficiency}
+				 variant="bordered"
+				 classNames={{
+					input: ["bg-transparent", "text-foreground", "placeholder:text-grey"],
+					inputWrapper: "border-1 border-foreground rounded-none",
+				 }}
+				 onChange={(e) => {
+					const { name, value } = e.target;
+					setEngine((prev) => ({ ...prev, [name]: value }));
+				 }
+				 }
+				 />
+				<Input
+				 key={"fuelLowerHeatingValue"}
+				 name={"fuelLowerHeatingValue"}
+				 label={"Fuel Lower Heating Value"}
+				 value={engine.fuelLowerHeatingValue}
+				 variant="bordered"
+				 classNames={{
+					input: ["bg-transparent", "text-foreground", "placeholder:text-grey"],
+					inputWrapper: "border-1 border-foreground rounded-none",
+				 }}
+				 onChange={(e) => {
+					const { name, value } = e.target;
+					setEngine((prev) => ({ ...prev, [name]: value }));
+				 }
+				 }
+				 />
+		</div>
         </ModalBody>
         <ModalFooter className="justify-end">
           <Button color="primary" onPress={async () => { await handleAddEngine(); onClose(); updateCallback(); }}>

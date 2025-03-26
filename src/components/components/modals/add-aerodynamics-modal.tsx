@@ -1,5 +1,6 @@
 import { Button } from "@heroui/button";
 import { Input } from "@heroui/input";
+import { Divider } from "@heroui/divider";
 import { ModalHeader, ModalBody, ModalFooter } from "@heroui/modal";
 import { generateClient } from "aws-amplify/api";
 import { useState } from "react";
@@ -41,12 +42,11 @@ export default function AddAerodynamicsComponent({onClose, updateCallback}: { on
         <ModalHeader className="justify-center">Add Aerodynamics</ModalHeader>
         <ModalBody>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {Object.entries(aerodynamics).map(([key, value]) => (
               <Input
-              key={key}
-              name={key}
-              label={key}
-              value={value}
+              key={"name"}
+              name={"name"}
+              label={"Name"}
+              value={aerodynamics.name}
               variant="bordered"
               classNames={{
                 input: ["bg-transparent", "text-foreground", "placeholder:text-grey"],
@@ -57,8 +57,121 @@ export default function AddAerodynamicsComponent({onClose, updateCallback}: { on
                 setAerodynamics((prev) => ({ ...prev, [name]: value }));
               }}
               />
-            ))}
             </div>
+			<Divider />
+			<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+			  <Input
+			  key={"liftCoefficientCL"}
+			  name={"liftCoefficientCL"}
+			  label={"Lift Coefficient CL"}
+			  value={aerodynamics.liftCoefficientCL}
+			  variant="bordered"
+			  classNames={{
+				input: ["bg-transparent", "text-foreground", "placeholder:text-grey"],
+				inputWrapper: "border-1 border-foreground rounded-none",
+			  }}
+			  onChange={(e) => {
+				const { name, value } = e.target;
+				setAerodynamics((prev) => ({ ...prev, [name]: value }));
+			  }}
+			  />
+              <Input
+              key={"dragCoefficientCD"}
+              name={"dragCoefficientCD"}
+              label={"Drag Coefficient CD"}
+              value={aerodynamics.dragCoefficientCD}
+              variant="bordered"
+              classNames={{
+                input: ["bg-transparent", "text-foreground", "placeholder:text-grey"],
+                inputWrapper: "border-1 border-foreground rounded-none",
+              }}
+              onChange={(e) => {
+                const { name, value } = e.target;
+                setAerodynamics((prev) => ({ ...prev, [name]: value }));
+              }}
+              />
+			</div>
+			<Divider />
+			<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+			<Input
+			key={"clScaleMultiplier"}
+			name={"clScaleMultiplier"}
+			label={"CL Scale Multiplier"}
+			value={aerodynamics.clScaleMultiplier}
+			variant="bordered"
+			classNames={{
+				input: ["bg-transparent", "text-foreground", "placeholder:text-grey"],
+				inputWrapper: "border-1 border-foreground rounded-none",
+			}}
+			onChange={(e) => {
+				const { name, value } = e.target;
+				setAerodynamics((prev) => ({ ...prev, [name]: value }));
+			}}
+			/>
+			<Input
+			key={"cdScaleMultiplier"}
+			name={"cdScaleMultiplier"}
+			label={"CD Scale Multiplier"}
+			value={aerodynamics.cdScaleMultiplier}
+			variant="bordered"
+			classNames={{
+				input: ["bg-transparent", "text-foreground", "placeholder:text-grey"],
+				inputWrapper: "border-1 border-foreground rounded-none",
+			}}
+			onChange={(e) => {
+				const { name, value } = e.target;
+				setAerodynamics((prev) => ({ ...prev, [name]: value }));
+			}}
+			/>
+			</div>
+			<Divider />
+			<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+			<Input
+			key={"frontAeroDistribution"}
+			name={"frontAeroDistribution"}
+			label={"Front Aero Distribution"}
+			value={aerodynamics.frontAeroDistribution}
+			variant="bordered"
+			classNames={{
+				input: ["bg-transparent", "text-foreground", "placeholder:text-grey"],
+				inputWrapper: "border-1 border-foreground rounded-none",
+			}}
+			onChange={(e) => {
+				const { name, value } = e.target;
+				setAerodynamics((prev) => ({ ...prev, [name]: value }));
+			}}
+			/>
+			<Input
+			key={"frontalArea"}
+			name={"frontalArea"}
+			label={"Frontal Area"}
+			value={aerodynamics.frontalArea}
+			variant="bordered"
+			classNames={{
+				input: ["bg-transparent", "text-foreground", "placeholder:text-grey"],
+				inputWrapper: "border-1 border-foreground rounded-none",
+			}}
+			onChange={(e) => {
+				const { name, value } = e.target;
+				setAerodynamics((prev) => ({ ...prev, [name]: value }));
+			}}
+			/>
+			<Input
+			key={"airDensity"}
+			name={"airDensity"}
+			label={"Air Density"}
+			value={aerodynamics.airDensity}
+			variant="bordered"
+			classNames={{
+				input: ["bg-transparent", "text-foreground", "placeholder:text-grey"],
+				inputWrapper: "border-1 border-foreground rounded-none",
+			}}
+			onChange={(e) => {
+				const { name, value } = e.target;
+				setAerodynamics((prev) => ({ ...prev, [name]: value }));
+			}}
+			/>
+			</div>
         </ModalBody>
         <ModalFooter className="justify-end">
           <Button color="primary" onPress={async () => { await handleAddAerodynamics(); onClose(); updateCallback(); }}>
