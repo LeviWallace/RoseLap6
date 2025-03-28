@@ -62,7 +62,11 @@ export default function VehicleAddModal({isOpen, onClose, updateCallback}: {isOp
                   className="mb-4"
                   type="text"
                   label="Name"
-                  variant="underlined"
+                  variant="bordered"
+				  classNames={{
+					  input: ['bg-transparent', 'text-foreground', 'placeholder:text-grey'],
+					  inputWrapper: "border-1 border-foreground rounded-none",
+				  }}
                 />
 				</div>
 				<Divider />
@@ -74,7 +78,11 @@ export default function VehicleAddModal({isOpen, onClose, updateCallback}: {isOp
                   className="mb-4"
                   type="text"
                   label="Mass"
-                  variant="underlined"
+				  variant="bordered"
+				  classNames={{
+					  input: ['bg-transparent', 'text-foreground', 'placeholder:text-grey'],
+					  inputWrapper: "border-1 border-foreground rounded-none",
+				  }}
                 />
                 <Input
                   name="fmd"
@@ -83,8 +91,13 @@ export default function VehicleAddModal({isOpen, onClose, updateCallback}: {isOp
                   className="mb-4"
                   type="text"
                   label="Front Mass Distribution"
-                  variant="underlined"
-                />
+                  variant="bordered"
+			   	  classNames={{
+					  input: ['bg-transparent', 'text-foreground', 'placeholder:text-grey'],
+					  inputWrapper: "border-1 border-foreground rounded-none",
+				  }} 
+                  
+				  />
 				</div>
 				<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
 				
