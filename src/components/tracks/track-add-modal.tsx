@@ -58,6 +58,7 @@ export default function TrackAddModal({isOpen, onClose, updateCallback}: {isOpen
             <>
               <ModalHeader className="justify-center">Add Track</ModalHeader>
               <ModalBody>
+			    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <Input
                   name="name"
                   value={track.name}
@@ -98,6 +99,7 @@ export default function TrackAddModal({isOpen, onClose, updateCallback}: {isOpen
                   label="City"
                   variant="underlined"
                 />
+			   </div>
               </ModalBody>
               <ModalFooter className="justify-end">
                 <Button color="primary" onPress={() => { handleAddTrack(); onClose(); }}>

@@ -1,4 +1,5 @@
 import { Button } from '@heroui/button';
+import { Divider } from '@heroui/divider';
 import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader} from '@heroui/modal';
 import { type Schema } from '@/../amplify/data/resource';
 import { generateClient } from 'aws-amplify/api';
@@ -39,34 +40,38 @@ export default function VehicleAddModal({isOpen, onClose, updateCallback}: {isOp
         return;
     }
 
+
+
     function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
         const { name, value } = e.target;
         setVehicle((prev) => ({ ...prev, [name]: value }));
     } 
 
     return (
-        <Modal isOpen={isOpen} size='lg' onClose={onClose} radius='none'>
+        <Modal isOpen={isOpen} size='4xl' onClose={onClose} radius='none'>
         <ModalContent className="border-white border-1 bg-background">
           {(onClose) => (
             <>
-              <ModalHeader className="justify-center">Add Track</ModalHeader>
+              <ModalHeader className="justify-center">Add Vehicle</ModalHeader>
               <ModalBody>
+				<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <Input
                   name="name"
                   value={vehicle.name}
                   onChange={handleChange}
                   className="mb-4"
-                  placeholder="Enter track name"
                   type="text"
                   label="Name"
                   variant="underlined"
                 />
+				</div>
+				<Divider />
+				<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <Input
                   name="mass"
                   value={vehicle.mass}
                   onChange={handleChange}
                   className="mb-4"
-                  placeholder="Enter vehicle mass"
                   type="text"
                   label="Mass"
                   variant="underlined"
@@ -76,11 +81,14 @@ export default function VehicleAddModal({isOpen, onClose, updateCallback}: {isOp
                   value={vehicle.frontMassDistribution}
                   onChange={handleChange}
                   className="mb-4"
-                  placeholder="Enter front mass distribution"
                   type="text"
                   label="Front Mass Distribution"
                   variant="underlined"
                 />
+				</div>
+				<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+				
+				</div>
               </ModalBody>
               <ModalFooter className="justify-end">
                 <Button color="primary" onPress={() => { handleAddTrack(); onClose(); }}>
