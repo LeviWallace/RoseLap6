@@ -19,7 +19,7 @@ import AddBrakesComponent from './modals/add-brakes-modal';
 export default function ComponentAddModal({ isOpen, onClose, updateCallback, type }: { isOpen: boolean, onClose: () => void, updateCallback: () => void, type: string }) {
   
   return (
-    <Modal isOpen={isOpen} size='5xl' onClose={onClose} radius='none' isDismissable={false} isKeyboardDismissable={false}>
+    <Modal isOpen={isOpen} size='5xl' onClose={onClose} radius='none' isDismissable={false} isKeyboardDismissDisabled>
       <ModalContent className="border-white border-1 bg-background">
       {(onClose) => (
           <>
