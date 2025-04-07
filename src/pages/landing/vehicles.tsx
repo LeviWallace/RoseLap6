@@ -40,13 +40,13 @@ export default function VehiclesPage() {
                 <div className="grid grid-cols-12"></div>
                     <div className="flex justify-between items-center space-x-2">
                         <Input
-                            name="password"
+                            name="vehicles"
                             value={search}
                             onChange={handleInputChange}
                             className="my-7 px-4"
-                            placeholder="Search All Tracks.."
+                            placeholder="Search All Vehicles.."
                             type="text"
-                            label="Password"
+                            label="Vehicles"
                             variant="underlined"
                         />
                         <Button>Search</Button>

@@ -32,16 +32,20 @@ export const siteConfig = {
   ],
   accountItems: [
     {
-      label: "Vehicles",
-      href: "/landing/vehicles",
-    },
-    {
       label: "Tracks",
       href: "/landing/tracks",
     },
     {
       label: "Previous Sweeps",
       href: "/landing/sweeps",
+    },
+    {
+      label: "Vehicles",
+      href: "/landing/vehicles",
+    },
+    {
+      label: "Components",
+      href: "/landing/components",
     },
   ],
   links: [

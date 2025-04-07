@@ -152,6 +152,7 @@ export default function ComponentsPage() {
                 <div className="flex justify-between items-center space-x-2">
                     <Input
                         name="component-search"
+						label="Components"
                         value={componentData.search}
                         onChange={handleInputChange}
                         className="my-7 px-4"
