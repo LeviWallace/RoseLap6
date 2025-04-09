@@ -70,7 +70,6 @@ export default function TracksPage() {
 
     function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
         setSearch(e.target.value);
-        handleSearchTracks();
     }
 
     return (
@@ -80,17 +79,31 @@ export default function TracksPage() {
             <div className="grid grid-cols-12"></div>
                 <div className="flex justify-between items-center space-x-2">
                     <Input
-                        name="password"
+                        name="tracks"
                         value={search}
                         onChange={handleInputChange}
                         className="my-7 px-4"
                         placeholder="Search All Tracks.."
                         type="text"
-                        label="Password"
+                        label="Tracks"
                         variant="underlined"
                     />
-                    <Button onPress={handleSearchTracks}>Search</Button>
-                    <Button onPress={() => handleTrackAddModal()}>Add Track</Button>
+                    <Button 
+						onPress={handleSearchTracks}
+						variant="bordered"
+						size="lg"
+						className="border-1 rounded-sm border-foreground"
+					>
+						Search
+					</Button>
+                    <Button 
+						onPress={() => handleTrackAddModal()}
+						variant="bordered"
+						size="lg"
+						className="border-1 rounded-sm border-foreground"
+					>
+						Add Track
+					</Button>
                 </div>
             <div className="grid grid-cols12">
                 <TrackContainer tracks={tracks} updateCallback={handleGetTracks}/>

@@ -1,7 +1,7 @@
 import { Button } from "@heroui/button";
 import { Input } from "@heroui/input";
 import { Divider } from "@heroui/divider";
-import { Autocomplete, AutocompleteItem, AutocompleteSection } from "@heroui/autocomplete";
+import { Autocomplete, AutocompleteItem } from "@heroui/autocomplete";
 import { ModalHeader, ModalBody, ModalFooter } from "@heroui/modal";
 import { generateClient } from "aws-amplify/api";
 import { useState } from "react";

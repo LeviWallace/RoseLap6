@@ -160,6 +160,14 @@ export default function ComponentsPage() {
                         type="text"
                         variant="underlined"
                     />
+					<Button
+						onPress={handleGetComponents}
+						variant="bordered"
+						size="lg"
+						className="border-1 rounded-sm border-foreground"
+					>
+						Search
+					</Button>
                     <Dropdown
                         showArrow
                         classNames={{
@@ -167,7 +175,10 @@ export default function ComponentsPage() {
                             content: "border border-white bg-background",
                         }}>
                         <DropdownTrigger>
-                            <Button>
+                            <Button
+								variant="bordered"
+								size="lg"
+								className="border-1 rounded-sm border-foreground">
                                 Add Component
                             </Button>
                         </DropdownTrigger>

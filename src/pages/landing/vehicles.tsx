@@ -36,7 +36,7 @@ export default function VehiclesPage() {
 
 	useEffect(() => {
 		handleGetVehicles();
-	}, [search]);
+	});
 
     return (
         <>
@@ -49,13 +49,27 @@ export default function VehiclesPage() {
                             value={search}
                             onChange={handleInputChange}
                             className="my-7 px-4"
-                            placeholder="Search All Vehicles.."
+                            placeholder="Search All Vehicles..."
                             type="text"
                             label="Vehicles"
                             variant="underlined"
                         />
-                        <Button>Search</Button>
-                        <Button onPress={onOpen}>Add Track</Button>
+                        <Button 
+							onPress={handleGetVehicles}
+							variant="bordered"
+							size="lg"
+							className="border-1 rounded-sm border-foreground"
+						>
+							Search
+						</Button>
+                        <Button 
+							onPress={onOpen}
+							variant="bordered"
+							size="lg"
+							className="border-1 rounded-sm border-foreground"
+						>
+							Add Vehicle 
+						</Button>
                     </div>
 					<VehicleContainer vehicles={vehicles} updateCallback={handleGetVehicles}/>
 				</div>
