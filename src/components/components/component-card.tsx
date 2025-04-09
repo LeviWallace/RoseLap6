@@ -24,7 +24,7 @@ export default function ComponentCard({component, updateCallback}: ComponentProp
     async function handleDeleteComponent() {
 		console.log(component);
 		switch (component.type) {
-			case 'Brake':
+			case 'Brake': 
 				await client.models.Brakes.delete({ id: component.id });
 				break;
 			case 'Engine':
@@ -44,12 +44,12 @@ export default function ComponentCard({component, updateCallback}: ComponentProp
     }
 
     return (
-        <Card className="border rounded-none m-2 bg-background">
+        <Card className="border rounded-lg m-2 bg-background">
             <CardHeader className="justify-between">
-                <h1 className="text-2xl font-extrabold">{component.name}</h1>
+                <h2 className="text-xl tracking-tighter font-bold">TYPE: {component.type}</h2>
             </CardHeader>
             <CardBody className="flex-row justify-between">
-                <h2>{component.type}</h2>
+                <h1 className="text-2xl font-extrabold uppercase">{component.name}</h1>
             </CardBody>
             <CardFooter className="justify-between">
                 <Button color="danger" size="sm" onPress={handleDeleteComponent}>

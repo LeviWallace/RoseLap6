@@ -10,7 +10,7 @@ import { useEffect } from 'react';
 
 const client = generateClient<Schema>();
 type Component = { id: string, name: string };
-type VehicleConfig = {name: string | undefined, mass: string | undefined, frontMassDistribution: string | undefined, tire: Component | undefined, aerodynamics: Component | undefined, brakes: Component | undefined, engine: Component | undefined, transmission: Component | undefined, torqueCurve: Component | undefined};
+type VehicleConfig = { name: string | undefined, mass: string | undefined, frontMassDistribution: string | undefined, tire: string, aerodynamics: string, brakes: string, engine: string, transmission: string, tireId: string | null, aerodynamicsId: string | null, brakesId: string | null, engineId: string | null, transmissionId: string | null };
 
 export default function VehicleAddModal({isOpen, onClose, updateCallback}: {isOpen: boolean, onClose: () => void, updateCallback: () => void}) {
     const [vehicle, setVehicle] = useState<VehicleConfig>({
@@ -18,12 +18,17 @@ export default function VehicleAddModal({isOpen, onClose, updateCallback}: {isOp
         mass: undefined,
         frontMassDistribution: undefined,
 
-        tire: undefined,
-        aerodynamics: undefined,
-        brakes: undefined,
-        engine: undefined,
-        transmission: undefined,
-        torqueCurve: undefined,
+        tire: "",
+        aerodynamics: "",
+        brakes: "",
+        engine: "",
+        transmission: "",
+
+		tireId: null,
+		aerodynamicsId: null,
+		brakesId: null,
+		engineId: null,
+		transmissionId: null,
     });
 
 	const [components, setComponents] = useState({
@@ -63,20 +68,20 @@ export default function VehicleAddModal({isOpen, onClose, updateCallback}: {isOp
 
     async function handleAddVehicle() {
 		console.log(vehicle);
-		if (vehicle.tire === undefined || vehicle.aerodynamics === undefined || vehicle.brakes === undefined || vehicle.engine === undefined || vehicle.transmission === undefined || vehicle.torqueCurve === undefined) {
+		if (vehicle.tireId == null || vehicle.aerodynamicsId == null || vehicle.brakesId == null || vehicle.engineId == null || vehicle.transmissionId == null) {
 			console.error('Missing components');
 			return
 		}
         const { errors, data } = await client.models.Vehicle.create({
             name: vehicle.name,
-            mass: vehicle.mass ? parseInt(vehicle.mass) : undefined,
+            mass: vehicle.mass ? parseFloat(vehicle.mass) : undefined,
             frontMassDistribution: vehicle.frontMassDistribution ? parseFloat(vehicle.frontMassDistribution) : undefined,
-            tireId: vehicle.tire.id,
-            aerodynamicsId: vehicle.aerodynamics.id,
-            brakesId: vehicle.brakes.id,
-            engineId: vehicle.engine.id,
-            transmissionId: vehicle.transmission.id,
-            torqueCurveId: vehicle.torqueCurve.id,
+            tireId: vehicle.tireId,
+            aerodynamicsId: vehicle.aerodynamicsId,
+            brakesId: vehicle.brakesId,
+            engineId: vehicle.engineId,
+            transmissionId: vehicle.transmissionId,
+            torqueCurveId: null,
         })
         console.log(errors, data);
         updateCallback();
@@ -105,6 +110,7 @@ export default function VehicleAddModal({isOpen, onClose, updateCallback}: {isOp
                   type="text"
                   label="Name"
                   variant="bordered"
+				  isRequired
 				  classNames={{
 					  input: ['bg-transparent', 'text-foreground', 'placeholder:text-grey'],
 					  inputWrapper: "border-1 border-foreground rounded-none",
@@ -121,6 +127,7 @@ export default function VehicleAddModal({isOpen, onClose, updateCallback}: {isOp
                   type="text"
                   label="Mass"
 				  variant="bordered"
+				  isRequired
 				  classNames={{
 					  input: ['bg-transparent', 'text-foreground', 'placeholder:text-grey'],
 					  inputWrapper: "border-1 border-foreground rounded-none",
@@ -134,6 +141,7 @@ export default function VehicleAddModal({isOpen, onClose, updateCallback}: {isOp
                   type="text"
                   label="Front Mass Distribution"
                   variant="bordered"
+				  isRequired
 			   	  classNames={{
 					  input: ['bg-transparent', 'text-foreground', 'placeholder:text-grey'],
 					  inputWrapper: "border-1 border-foreground rounded-none",
@@ -148,8 +156,19 @@ export default function VehicleAddModal({isOpen, onClose, updateCallback}: {isOp
 						label="Tire"
 						placeholder="Select Tire"
 						variant="bordered"
-						value={vehicle.tire}
 						isRequired
+						onInputChange={(value) => {
+							setVehicle((prev) => ({
+								...prev,
+								tire: value
+							}));
+						}}
+						onSelectionChange={(id) => {
+							setVehicle((prev) => ({
+								...prev,
+								tireId: id == null ? id : id.toString()
+							}));
+						}}
 					>
 						{(tire) => <AutocompleteItem key={tire.id}>{tire.name}</AutocompleteItem>}
 					</Autocomplete>
@@ -161,6 +180,18 @@ export default function VehicleAddModal({isOpen, onClose, updateCallback}: {isOp
 						placeholder="Select Brake"
 						variant="bordered"
 						isRequired
+						onInputChange={(value) => {
+							setVehicle((prev) => ({
+								...prev,
+								brakes: value
+							}));
+						}}
+						onSelectionChange={(id) => {
+							setVehicle((prev) => ({
+								...prev,
+								brakesId: id == null ? id : id.toString()
+							}));
+						}}
 					>
 					{(brake) => <AutocompleteItem key={brake.id}>{brake.name}</AutocompleteItem>}
 					</Autocomplete>
@@ -173,6 +204,18 @@ export default function VehicleAddModal({isOpen, onClose, updateCallback}: {isOp
 						placeholder="Select Aerodynamics"
 						variant="bordered"
 						isRequired
+						onInputChange={(value) => {
+							setVehicle((prev) => ({
+								...prev,
+								aerodynamics: value
+							}));
+						}}
+						onSelectionChange={(id) => {
+							setVehicle((prev) => ({
+								...prev,
+								aerodynamicsId: id == null ? id : id.toString()
+							}));
+						}}
 					>
 					{(aerodynamic) => <AutocompleteItem key={aerodynamic.id}>{aerodynamic.name}</AutocompleteItem>} 
 					</Autocomplete>
@@ -184,6 +227,18 @@ export default function VehicleAddModal({isOpen, onClose, updateCallback}: {isOp
 						placeholder="Select Engine"
 						variant="bordered"
 						isRequired
+						onInputChange={(value) => {
+							setVehicle((prev) => ({
+								...prev,
+								engine: value
+							}));
+						}}
+						onSelectionChange={(id) => {
+							setVehicle((prev) => ({
+								...prev,
+								engineId: id == null ? id : id.toString()
+							}));
+						}}
 					>
 					{(engine) => <AutocompleteItem key={engine.id}>{engine.name}</AutocompleteItem>}
 					</Autocomplete>
@@ -195,6 +250,18 @@ export default function VehicleAddModal({isOpen, onClose, updateCallback}: {isOp
 						placeholder="Select Transmission"
 						variant="bordered"
 						isRequired
+						onInputChange={(value) => {
+							setVehicle((prev) => ({
+								...prev,
+								transmission: value
+							}));
+						}}
+						onSelectionChange={(id) => {
+							setVehicle((prev) => ({
+								...prev,
+								transmissionId: id == null ? id : id.toString()
+							}));
+						}}
 					>
 					{(transmission) => <AutocompleteItem key={transmission.id}>{transmission.name}</AutocompleteItem>}
 					</Autocomplete>
