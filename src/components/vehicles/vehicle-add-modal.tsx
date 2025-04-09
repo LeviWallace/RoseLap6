@@ -62,6 +62,7 @@ export default function VehicleAddModal({isOpen, onClose, updateCallback}: {isOp
 	}, [isOpen]);
 
     async function handleAddVehicle() {
+		console.log(vehicle);
 		if (vehicle.tire === undefined || vehicle.aerodynamics === undefined || vehicle.brakes === undefined || vehicle.engine === undefined || vehicle.transmission === undefined || vehicle.torqueCurve === undefined) {
 			console.error('Missing components');
 			return
@@ -137,7 +138,6 @@ export default function VehicleAddModal({isOpen, onClose, updateCallback}: {isOp
 					  input: ['bg-transparent', 'text-foreground', 'placeholder:text-grey'],
 					  inputWrapper: "border-1 border-foreground rounded-none",
 				  }} 
-                  
 				  />
 				</div>
 				<Divider />
@@ -148,9 +148,10 @@ export default function VehicleAddModal({isOpen, onClose, updateCallback}: {isOp
 						label="Tire"
 						placeholder="Select Tire"
 						variant="bordered"
+						value={vehicle.tire}
 						isRequired
 					>
-					{(tire) => <AutocompleteItem key={tire.id} id={tire.id}/>}
+						{(tire) => <AutocompleteItem key={tire.id}>{tire.name}</AutocompleteItem>}
 					</Autocomplete>
 					
 					<Autocomplete
@@ -161,7 +162,7 @@ export default function VehicleAddModal({isOpen, onClose, updateCallback}: {isOp
 						variant="bordered"
 						isRequired
 					>
-					{(tire) => <AutocompleteItem key={tire.id} id={tire.id}/>}
+					{(brake) => <AutocompleteItem key={brake.id}>{brake.name}</AutocompleteItem>}
 					</Autocomplete>
 				
 					
@@ -173,7 +174,7 @@ export default function VehicleAddModal({isOpen, onClose, updateCallback}: {isOp
 						variant="bordered"
 						isRequired
 					>
-					{(tire) => <AutocompleteItem key={tire.id} id={tire.id}/>}
+					{(aerodynamic) => <AutocompleteItem key={aerodynamic.id}>{aerodynamic.name}</AutocompleteItem>} 
 					</Autocomplete>
 
 					<Autocomplete
@@ -184,7 +185,7 @@ export default function VehicleAddModal({isOpen, onClose, updateCallback}: {isOp
 						variant="bordered"
 						isRequired
 					>
-					{(tire) => <AutocompleteItem key={tire.id} id={tire.id}/>}
+					{(engine) => <AutocompleteItem key={engine.id}>{engine.name}</AutocompleteItem>}
 					</Autocomplete>
 					
 					<Autocomplete
@@ -195,7 +196,7 @@ export default function VehicleAddModal({isOpen, onClose, updateCallback}: {isOp
 						variant="bordered"
 						isRequired
 					>
-					{(tire) => <AutocompleteItem key={tire.id} id={tire.id}/>}
+					{(transmission) => <AutocompleteItem key={transmission.id}>{transmission.name}</AutocompleteItem>}
 					</Autocomplete>
 
 				</div>

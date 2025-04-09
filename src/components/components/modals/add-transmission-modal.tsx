@@ -1,12 +1,31 @@
 import { Button } from "@heroui/button";
 import { Input } from "@heroui/input";
 import { Divider } from "@heroui/divider";
+import { Autocomplete, AutocompleteItem, AutocompleteSection } from "@heroui/autocomplete";
 import { ModalHeader, ModalBody, ModalFooter } from "@heroui/modal";
 import { generateClient } from "aws-amplify/api";
 import { useState } from "react";
 import { Schema } from "../../../../amplify/data/resource";
 
 const client = generateClient<Schema>();
+
+const transmissionDriveTypes = [
+	{
+		label: "Front Wheel Drive",
+		value: "FrontWheelDrive",
+		key: "FrontWheelDrive"
+	},
+	{
+		label: "Rear Wheel Drive",
+		value: "RearWheelDrive",
+		key: "RearWheelDrive"
+	},
+	{
+		label: "All Wheel Drive",
+		value: "AllWheelDrive",
+		key: "AllWheelDrive"
+	},
+]
 
 export default function AddTransmissionComponent({onClose, updateCallback}: { onClose: () => void, updateCallback: () => void }) {
     const [transmission, setTransmission] = useState({
@@ -19,14 +38,15 @@ export default function AddTransmissionComponent({onClose, updateCallback}: { on
       gearboxEfficiency: undefined,
       primaryGearReduction: undefined,
       finalGearReduction: undefined,
-      gearRatios: undefined,
+      gearRatios: [],
     });
+
+
     
     async function handleAddTransmission() {
       const { errors } = await client.models.Transmission.create({
         name: transmission.name,
         driveType: transmission.driveType,
-        finalDriveRatio: transmission.finalDriveRatio,
         gearShiftTime: transmission.gearShiftTime,
         primaryGearEfficiency: transmission.primaryGearEfficiency,
         finalGearEfficiency: transmission.finalDriveRatio,
@@ -40,7 +60,7 @@ export default function AddTransmissionComponent({onClose, updateCallback}: { on
       }
       return;
     }
-    
+
     return (
       <>
       <ModalHeader className="justify-center">Add Transmission</ModalHeader>
@@ -64,38 +84,20 @@ export default function AddTransmissionComponent({onClose, updateCallback}: { on
         </div>
 		<Divider />
 		<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-		<Input
-		key={"driveType"}
-		name={"driveType"}
-		label={"Drive Type NEED FIX"}
-		value={transmission.driveType}
-		variant="bordered"
-		classNames={{
-		input: ["bg-transparent", "text-foreground", "placeholder:text-grey"],
-		inputWrapper: "border-1 border-foreground rounded-none",
-		}}
-		onChange={(e) => {
-		const { name, value } = e.target;
-		setTransmission((prev) => ({ ...prev, [name]: value }));
-		}
-		}
-		/>
-		<Input
-		key={"finalDriveRatio"}
-		name={"finalDriveRatio"}
-		label={"Final Drive Ratio"}
-		value={transmission.finalDriveRatio}
-		variant="bordered"
-		classNames={{
-		input: ["bg-transparent", "text-foreground", "placeholder:text-grey"],
-		inputWrapper: "border-1 border-foreground rounded-none",
-		}}
-		onChange={(e) => {
-		const { name, value } = e.target;
-		setTransmission((prev) => ({ ...prev, [name]: value }));
-		}
-		}
-		/>
+		<Autocomplete
+			key={"driveType"}
+			classNames={{
+				listbox: ["bg-transparent", "text-foreground", "placeholder:text-grey", "borderd-1", "border-foreground", "rounded-none"],
+				listboxWrapper: ["bg-background", "text-foreground", "placeholder:text-grey", "rounded-none"],
+				base: ["rounded-none", "border-1", "border-foreground", "bg-transparent"],
+			}}
+			variant="bordered"
+			label="Drive Type"
+			defaultItems={transmissionDriveTypes}
+			value={transmission.driveType}
+		>
+			{(item) => <AutocompleteItem key={item.key}>{item.label}</AutocompleteItem>}
+		</Autocomplete>
 		<Input
 		key={"gearShiftTime"}
 		name={"gearShiftTime"}
@@ -198,24 +200,56 @@ export default function AddTransmissionComponent({onClose, updateCallback}: { on
 		}
 		}
 		/>
+		</div>	
+		<Divider />
+		<div className="grid grid-cols-3 md:grid-cols-6 gap-4">
 		<Input
-		key={"gearRatios"}
-		name={"gearRatios"}
-		label={"Gear Ratios"}
-		value={transmission.gearRatios}
-		variant="bordered"
+		 key={"1st Gear Ratio"}
+		 label={"1st Gear Ratio"} 
 		classNames={{
 		input: ["bg-transparent", "text-foreground", "placeholder:text-grey"],
 		inputWrapper: "border-1 border-foreground rounded-none",
 		}}
-		onChange={(e) => {
-		const { name, value } = e.target;
-		setTransmission((prev) => ({ ...prev, [name]: value }));
-		}
-		}
+		 onChange={(e) => {
+			const { name, value } = e.target;
+			setTransmission((prev) => ({ ...prev, [name]: value }));
+			}
+		 }
+		 value={transmission.gearRatios[0]}
 		/>
-		</div>	
-      </ModalBody>
+
+		<Input
+		 key={"2nd Gear Ratio"}
+		 label={"2nd Gear Ratio"} 
+		classNames={{
+		input: ["bg-transparent", "text-foreground", "placeholder:text-grey"],
+		inputWrapper: "border-1 border-foreground rounded-none",
+		}}
+		 onChange={(e) => {
+			const { name, value } = e.target;
+			setTransmission((prev) => ({ ...prev, [name]: value }));
+			}
+		 }
+		 value={transmission.gearRatios[1]}
+		/>
+
+		<Input
+		 key={"3rd Gear Ratio"}
+		 label={"3rd Gear Ratio"} 
+		classNames={{
+		input: ["bg-transparent", "text-foreground", "placeholder:text-grey"],
+		inputWrapper: "border-1 border-foreground rounded-none",
+		}}
+		 onChange={(e) => {
+			const { name, value } = e.target;
+			setTransmission((prev) => ({ ...prev, [name]: value }));
+			}
+		 }
+		 value={transmission.gearRatios[2]}
+		/>
+		</div>
+
+		</ModalBody>
       <ModalFooter className="justify-end">
         <Button color="primary" onPress={async () => { await handleAddTransmission(); onClose(); updateCallback(); }}>
         Add Transmission

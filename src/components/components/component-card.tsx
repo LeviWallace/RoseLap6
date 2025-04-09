@@ -24,7 +24,7 @@ export default function ComponentCard({component, updateCallback}: ComponentProp
     async function handleDeleteComponent() {
 		console.log(component);
 		switch (component.type) {
-			case 'Brakes':
+			case 'Brake':
 				await client.models.Brakes.delete({ id: component.id });
 				break;
 			case 'Engine':
@@ -36,7 +36,7 @@ export default function ComponentCard({component, updateCallback}: ComponentProp
 			case 'Transmission':
 				await client.models.Transmission.delete({ id: component.id });
 				break;
-			case 'Aerodynamics':
+			case 'Aerodynamic':
 				await client.models.Aerodynamics.delete({ id: component.id });
 				break;
 		}

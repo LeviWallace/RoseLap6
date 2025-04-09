@@ -4,8 +4,9 @@ import { Input } from "@heroui/input";
 import { useDisclosure } from "@heroui/use-disclosure";
 import { Schema } from "../../../amplify/data/resource";
 import { generateClient } from "aws-amplify/api";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import VehicleAddModal from "@/components/vehicles/vehicle-add-modal";
+import VehicleContainer from "@/components/vehicles/vehicle-container";
 
 const client = generateClient<Schema>();
 
@@ -33,11 +34,15 @@ export default function VehiclesPage() {
         setSearch(e.target.value)
     }
 
+	useEffect(() => {
+		handleGetVehicles();
+	}, [search]);
+
     return (
         <>
             <VehicleAddModal isOpen={isOpen} onClose={onClose} updateCallback={handleGetVehicles}></VehicleAddModal>
             <DefaultLayout>
-                <div className="grid grid-cols-12"></div>
+                <div>
                     <div className="flex justify-between items-center space-x-2">
                         <Input
                             name="vehicles"
@@ -52,9 +57,8 @@ export default function VehiclesPage() {
                         <Button>Search</Button>
                         <Button onPress={onOpen}>Add Track</Button>
                     </div>
-                {/* <div className="grid grid-cols12">
-                    <TrackContainer tracks={tracks} updateCallback={handleGetTracks}/>
-                </div> */}
+					<VehicleContainer vehicles={vehicles} updateCallback={handleGetVehicles}/>
+				</div>
             </DefaultLayout>
         </>
     )

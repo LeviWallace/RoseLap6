@@ -190,9 +190,7 @@ export default function ComponentsPage() {
                         </DropdownMenu>
                     </Dropdown>
                 </div>
-            <div className="grid grid-cols12">
                 <ComponentContainer components={componentData.components} updateCallback={handleGetComponents}/>
-            </div>
         </DefaultLayout>
         </>
     )

@@ -83,7 +83,6 @@ const schema = a.schema({
 		type: a.string().default("Transmission"),
 		name: a.string(),
 		driveType: a.enum(["FrontWheelDrive", "RearWheelDrive", "AllWheelDrive"]),
-		finalDriveRatio: a.float(),
 		gearShiftTime: a.float(),
 		primaryGearEfficiency: a.float(),
 		finalGearEfficiency: a.float(),
