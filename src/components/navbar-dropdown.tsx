@@ -79,11 +79,11 @@ export default function NavbarDropdown() {
                     ))}
                 </DropdownSection>
 				<DropdownSection>
-					<DropdownItem key="mount" isDisabled={vehicle == undefined}>
+					<DropdownItem key="vehicle" isDisabled={vehicle == undefined}>
 						Mounted: {vehicle != undefined ? vehicle.name : "Missing Vehicle"}	
 					</DropdownItem>
 
-					<DropdownItem color="secondary" key="mount" isDisabled={track == undefined}showDivider>
+					<DropdownItem color="secondary" key="track" isDisabled={track == undefined}showDivider>
 						Mounted: {track != undefined ? track.name : "Missing Track"}
 					</DropdownItem>
 				</DropdownSection>

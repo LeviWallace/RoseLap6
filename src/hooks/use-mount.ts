@@ -5,7 +5,7 @@ import { useState } from "react";
 type Vehicle = Schema['Vehicle']['type'];
 type Track = Schema['Track']['type']; 
 
-export function useMount() {
+export function useMount(): [ Vehicle | undefined, Track | undefined, (track: Track) => void, (vehicle: Vehicle) => void ] {
 	const [vehicle, setVehicle] = useState<Vehicle>();
 	const [track, setTrack] = useState<Track>();
 	
