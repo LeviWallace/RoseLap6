@@ -4,6 +4,7 @@ import { Dropdown, DropdownItem, DropdownMenu, DropdownSection, DropdownTrigger 
 import { Link } from "@heroui/link";
 import { signOut } from "aws-amplify/auth";
 import { useState } from "react";
+import { useMount } from "@/hooks/use-mount";
 
 
 function handleGetUsername()
@@ -28,6 +29,7 @@ function handleGetUsername()
  */
 export default function NavbarDropdown() {
     const [username, setUsername] = useState(handleGetUsername);
+	const [vehicle, track] = useMount();
 
     async function handleLogout() {
         localStorage.removeItem("username");
@@ -76,7 +78,15 @@ export default function NavbarDropdown() {
                         </DropdownItem>
                     ))}
                 </DropdownSection>
+				<DropdownSection>
+					<DropdownItem key="mount" isDisabled={vehicle == undefined}>
+						Mounted: {vehicle != undefined ? vehicle.name : "Missing Vehicle"}	
+					</DropdownItem>
 
+					<DropdownItem color="secondary" key="mount" isDisabled={track == undefined}showDivider>
+						Mounted: {track != undefined ? track.name : "Missing Track"}
+					</DropdownItem>
+				</DropdownSection>
                 <DropdownItem key="delete" className="text-primary" color="secondary" onPress={handleLogout}>
                     {siteConfig.logout.label}
                 </DropdownItem>

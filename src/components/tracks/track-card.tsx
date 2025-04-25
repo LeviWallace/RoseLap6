@@ -2,6 +2,7 @@ import { generateClient } from "aws-amplify/api";
 import { Schema } from "../../../amplify/data/resource";
 import { Button } from "@heroui/button";
 import { Card, CardBody, CardFooter, CardHeader } from "@heroui/card";
+import { useMount } from "@/hooks/use-mount";
 
 type Track = Schema['Track']['type'];
 
@@ -20,6 +21,7 @@ const client = generateClient<Schema>();
  * @returns {JSX.Element} The TrackCard component.
  */
 export default function TrackCard({track, updateCallback}: TrackProps) {
+	const [mountTrack] = useMount();
 
     async function handleDeleteTrack() {
         const { errors, data } = await client.models.Track.delete({ id: track.id });
@@ -41,7 +43,7 @@ export default function TrackCard({track, updateCallback}: TrackProps) {
                 <Button color="danger" size="sm" onPress={handleDeleteTrack}>
                     Delete Track
                 </Button>
-                <Button color="secondary" size="sm">
+                <Button color="secondary" size="sm" onPress={() => { mountTrack(track) }}>
                     Mount Track
                 </Button>
                 <Button color="primary" size="sm">
