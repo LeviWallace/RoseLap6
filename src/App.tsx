@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { fetchAuthSession } from "aws-amplify/auth";
 
 import IndexPage from "@/pages/index";
+import HistoryPage from "@/pages/history";
 import AuthenticationPage from "@/pages/auth";
 import LandingPage from "@/pages/landing";
 // import VehiclesPage from "@/pages/landing/vehicles";
@@ -10,6 +11,8 @@ import TracksPage from "./pages/landing/tracks";
 import ComponentsPage from "./pages/landing/components";
 import VehiclesPage from "./pages/landing/vehicles";
 import SweepsPage from "./pages/landing/sweeps";
+
+
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const [authenticated, setAuthenticated] = useState<boolean | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -47,7 +50,7 @@ function App() {
     <Routes>
       <Route element={<IndexPage />} path="/" />
       <Route element={<AuthenticationPage />} path="/auth" />
-
+	  <Route element={<HistoryPage />} path="/history" />
       {/* Landing Page */}
       <Route  element={<ProtectedRoute> <LandingPage /> </ProtectedRoute>} path="/landing" />
 

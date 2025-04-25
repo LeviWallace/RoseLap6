@@ -31,6 +31,10 @@ module.exports = {
       }
     },
     extend: {
+	  fontFamily: {
+		  geist: "'Geist', sans-serif",
+		  italianno: "'Italianno', cursive",
+	  },
       colors: {
         background: "#000000",
         foreground: "#EDEDDE",
