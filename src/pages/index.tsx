@@ -26,8 +26,7 @@ export default function IndexPage() {
           <div className="bg-background rounded-radius z-20 p-8 rounded-radius border-1 border-foreground sm:w-4/5 md:w-3/5 lg:w-2/5">
             <h1 className="text-5xl text-left font-bold text-foreground">Experience our breath-taking simulation technology</h1>
             <div className="mt-10 flex justify-start">
-              <Button as={Link}
-                      href="/login" className="text-foreground text-md px-6" color="primary" size="lg" radius="full">Check it out</Button>
+              <Button as={Link} to="/landing" className="text-foreground text-md px-6" color="primary" size="lg" radius="full">Check it out</Button>
             </div>
           </div>
         </div>
