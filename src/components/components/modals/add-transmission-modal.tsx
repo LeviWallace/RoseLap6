@@ -28,233 +28,273 @@ const transmissionDriveTypes = [
 ]
 
 export default function AddTransmissionComponent({onClose, updateCallback}: { onClose: () => void, updateCallback: () => void }) {
-    const [transmission, setTransmission] = useState({
-      name: undefined,
-      driveType: undefined,
-      finalDriveRatio: undefined,
-      gearShiftTime: undefined,
-      primaryGearEfficiency: undefined,
-      finalGearEfficiency: undefined,
-      gearboxEfficiency: undefined,
-      primaryGearReduction: undefined,
-      finalGearReduction: undefined,
-      gearRatios: [],
-    });
+	const [transmission, setTransmission] = useState({
+		name: undefined,
+		driveType: undefined,
+		finalDriveRatio: undefined,
+		gearShiftTime: undefined,
+		primaryGearEfficiency: undefined,
+		finalGearEfficiency: undefined,
+		gearboxEfficiency: undefined,
+		primaryGearReduction: undefined,
+		finalGearReduction: undefined,
+		gearRatios: [],
+		gearRatioSize: 3
+	});
 
 
-    
-    async function handleAddTransmission() {
-      const { errors } = await client.models.Transmission.create({
-        name: transmission.name,
-        driveType: transmission.driveType,
-        gearShiftTime: transmission.gearShiftTime,
-        primaryGearEfficiency: transmission.primaryGearEfficiency,
-        finalGearEfficiency: transmission.finalDriveRatio,
-        gearboxEfficiency: transmission.gearboxEfficiency,
-        primaryGearReduction: transmission.primaryGearReduction,
-        finalGearReduction: transmission.finalGearReduction,
-        gearRatios: transmission.gearRatios,
-      });
-      if (errors) {
-      console.log(errors);
-      }
-      return;
-    }
 
-    return (
-      <>
-      <ModalHeader className="justify-center">Add Transmission</ModalHeader>
-      <ModalBody>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Input
-          key={"name"}
-          name={"name"}
-          label={"Name"}
-          value={transmission.name}
-          variant="bordered"
-          classNames={{
-          input: ["bg-transparent", "text-foreground", "placeholder:text-grey"],
-          inputWrapper: "border-1 border-foreground rounded-none",
-          }}
-          onChange={(e) => {
-          const { name, value } = e.target;
-          setTransmission((prev) => ({ ...prev, [name]: value }));
-          }}
-          />
-        </div>
-		<Divider />
-		<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-		<Autocomplete
-			key={"driveType"}
-			classNames={{
-				listbox: ["bg-transparent", "text-foreground", "placeholder:text-grey", "borderd-1", "border-foreground", "rounded-none"],
-				listboxWrapper: ["bg-background", "text-foreground", "placeholder:text-grey", "rounded-none"],
-				base: ["rounded-none", "border-1", "border-foreground", "bg-transparent"],
-			}}
-			variant="bordered"
-			label="Drive Type"
-			defaultItems={transmissionDriveTypes}
-			value={transmission.driveType}
-		>
-			{(item) => <AutocompleteItem key={item.key}>{item.label}</AutocompleteItem>}
-		</Autocomplete>
-		<Input
-		key={"gearShiftTime"}
-		name={"gearShiftTime"}
-		label={"Gear Shift Time"}
-		value={transmission.gearShiftTime}
-		variant="bordered"
-		classNames={{
-		input: ["bg-transparent", "text-foreground", "placeholder:text-grey"],
-		inputWrapper: "border-1 border-foreground rounded-none",
-		}}
-		onChange={(e) => {
-		const { name, value } = e.target;
-		setTransmission((prev) => ({ ...prev, [name]: value }));
+	async function handleAddTransmission() {
+		const { errors } = await client.models.Transmission.create({
+			name: transmission.name,
+			driveType: transmission.driveType,
+			gearShiftTime: transmission.gearShiftTime,
+			primaryGearEfficiency: transmission.primaryGearEfficiency,
+			finalGearEfficiency: transmission.finalDriveRatio,
+			gearboxEfficiency: transmission.gearboxEfficiency,
+			primaryGearReduction: transmission.primaryGearReduction,
+			finalGearReduction: transmission.finalGearReduction,
+			gearRatios: transmission.gearRatios,
+		});
+		if (errors) {
+			console.log(errors);
 		}
-		}
-		/>
-		</div>
-		<Divider />
-		<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-		<Input
-		key={"primaryGearEfficiency"}
-		name={"primaryGearEfficiency"}
-		label={"Primary Gear Efficiency"}
-		value={transmission.primaryGearEfficiency}
-		variant="bordered"
-		classNames={{
-		input: ["bg-transparent", "text-foreground", "placeholder:text-grey"],
-		inputWrapper: "border-1 border-foreground rounded-none",
-		}}
-		onChange={(e) => {
-		const { name, value } = e.target;
-		setTransmission((prev) => ({ ...prev, [name]: value }));
-		}
-		}
-		/>
-		<Input
-		key={"finalGearEfficiency"}
-		name={"finalGearEfficiency"}
-		label={"Final Gear Efficiency"}
-		value={transmission.finalGearEfficiency}
-		variant="bordered"
-		classNames={{
-		input: ["bg-transparent", "text-foreground", "placeholder:text-grey"],
-		inputWrapper: "border-1 border-foreground rounded-none",
-		}}
-		onChange={(e) => {
-		const { name, value } = e.target;
-		setTransmission((prev) => ({ ...prev, [name]: value }));
-		}
-		}
-		/>
-		<Input
-		key={"gearboxEfficiency"}
-		name={"gearboxEfficiency"}
-		label={"Gearbox Efficiency"}
-		value={transmission.gearboxEfficiency}
-		variant="bordered"
-		classNames={{
-		input: ["bg-transparent", "text-foreground", "placeholder:text-grey"],
-		inputWrapper: "border-1 border-foreground rounded-none",
-		}}
-		onChange={(e) => {
-		const { name, value } = e.target;
-		setTransmission((prev) => ({ ...prev, [name]: value }));
-		}
-		}
-		/>
-		</div>
-		<Divider />
-		<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-		<Input
-		key={"primaryGearReduction"}
-		name={"primaryGearReduction"}
-		label={"Primary Gear Reduction"}
-		value={transmission.primaryGearReduction}
-		variant="bordered"
-		classNames={{
-		input: ["bg-transparent", "text-foreground", "placeholder:text-grey"],
-		inputWrapper: "border-1 border-foreground rounded-none",
-		}}
-		onChange={(e) => {
-		const { name, value } = e.target;
-		setTransmission((prev) => ({ ...prev, [name]: value }));
-		}
-		}
-		/>
-		<Input
-		key={"finalGearReduction"}
-		name={"finalGearReduction"}
-		label={"Final Gear Reduction"}
-		value={transmission.finalGearReduction}
-		variant="bordered"
-		classNames={{
-		input: ["bg-transparent", "text-foreground", "placeholder:text-grey"],
-		inputWrapper: "border-1 border-foreground rounded-none",
-		}}
-		onChange={(e) => {
-		const { name, value } = e.target;
-		setTransmission((prev) => ({ ...prev, [name]: value }));
-		}
-		}
-		/>
-		</div>	
-		<Divider />
-		<div className="grid grid-cols-3 md:grid-cols-6 gap-4">
-		<Input
-		 key={"1st Gear Ratio"}
-		 label={"1st Gear Ratio"} 
-		classNames={{
-		input: ["bg-transparent", "text-foreground", "placeholder:text-grey"],
-		inputWrapper: "border-1 border-foreground rounded-none",
-		}}
-		 onChange={(e) => {
-			const { name, value } = e.target;
-			setTransmission((prev) => ({ ...prev, [name]: value }));
-			}
-		 }
-		 value={transmission.gearRatios[0]}
-		/>
+		return;
+	}
 
-		<Input
-		 key={"2nd Gear Ratio"}
-		 label={"2nd Gear Ratio"} 
-		classNames={{
-		input: ["bg-transparent", "text-foreground", "placeholder:text-grey"],
-		inputWrapper: "border-1 border-foreground rounded-none",
-		}}
-		 onChange={(e) => {
-			const { name, value } = e.target;
-			setTransmission((prev) => ({ ...prev, [name]: value }));
-			}
-		 }
-		 value={transmission.gearRatios[1]}
-		/>
+	const handleAddGearRatioSize = () => {
+		setTransmission((prev) => ({
+			...prev,
+			gearRatioSize: prev.gearRatioSize + 1,
+		}));
+	}
 
-		<Input
-		 key={"3rd Gear Ratio"}
-		 label={"3rd Gear Ratio"} 
-		classNames={{
-		input: ["bg-transparent", "text-foreground", "placeholder:text-grey"],
-		inputWrapper: "border-1 border-foreground rounded-none",
-		}}
-		 onChange={(e) => {
-			const { name, value } = e.target;
-			setTransmission((prev) => ({ ...prev, [name]: value }));
-			}
-		 }
-		 value={transmission.gearRatios[2]}
-		/>
-		</div>
+	return (
+		<>
+			<ModalHeader className="justify-center">Add Transmission</ModalHeader>
+			<ModalBody>
+				<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+					<Input
+						key={"name"}
+						name={"name"}
+						label={"Name"}
+						isRequired
+						value={transmission.name}
+						variant="bordered"
+						classNames={{
+							input: ["bg-transparent", "text-foreground", "placeholder:text-grey"],
+							inputWrapper: "border-1 border-foreground rounded-none",
+						}}
+						onChange={(e) => {
+							const { name, value } = e.target;
+							setTransmission((prev) => ({ ...prev, [name]: value }));
+						}}
+					/>
+				</div>
+				<Divider />
+				<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+					<Autocomplete
+						key={"driveType"}
+						isRequired
+						classNames={{
+							listbox: ["bg-transparent", "text-foreground", "placeholder:text-grey"],
+						}}
+						variant="bordered"
+						label="Drive Type"
+						defaultItems={transmissionDriveTypes}
+						value={transmission.driveType}
+					>
+						{(item) => <AutocompleteItem key={item.key}>{item.label}</AutocompleteItem>}
+					</Autocomplete>
+					<Input
+						key={"gearShiftTime"}
+						name={"gearShiftTime"}
+						label={"Gear Shift Time"}
+						isRequired
+						value={transmission.gearShiftTime}
+						variant="bordered"
+						classNames={{
+							input: ["bg-transparent", "text-foreground", "placeholder:text-grey"],
+							inputWrapper: "border-1 border-foreground rounded-none",
+						}}
+						onChange={(e) => {
+							const { name, value } = e.target;
+							setTransmission((prev) => ({ ...prev, [name]: value }));
+						}
+						}
+					/>
+				</div>
+				<Divider />
+				<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+					<Input
+						key={"primaryGearEfficiency"}
+						name={"primaryGearEfficiency"}
+						label={"Primary Gear Efficiency"}
+						isRequired
+						value={transmission.primaryGearEfficiency}
+						variant="bordered"
+						classNames={{
+							input: ["bg-transparent", "text-foreground", "placeholder:text-grey"],
+							inputWrapper: "border-1 border-foreground rounded-none",
+						}}
+						onChange={(e) => {
+							const { name, value } = e.target;
+							setTransmission((prev) => ({ ...prev, [name]: value }));
+						}
+						}
+					/>
+					<Input
+						key={"finalGearEfficiency"}
+						name={"finalGearEfficiency"}
+						label={"Final Gear Efficiency"}
+						isRequired
+						value={transmission.finalGearEfficiency}
+						variant="bordered"
+						classNames={{
+							input: ["bg-transparent", "text-foreground", "placeholder:text-grey"],
+							inputWrapper: "border-1 border-foreground rounded-none",
+						}}
+						onChange={(e) => {
+							const { name, value } = e.target;
+							setTransmission((prev) => ({ ...prev, [name]: value }));
+						}
+						}
+					/>
+					<Input
+						key={"gearboxEfficiency"}
+						name={"gearboxEfficiency"}
+						label={"Gearbox Efficiency"}
+						isRequired
+						value={transmission.gearboxEfficiency}
+						variant="bordered"
+						classNames={{
+							input: ["bg-transparent", "text-foreground", "placeholder:text-grey"],
+							inputWrapper: "border-1 border-foreground rounded-none",
+						}}
+						onChange={(e) => {
+							const { name, value } = e.target;
+							setTransmission((prev) => ({ ...prev, [name]: value }));
+						}
+						}
+					/>
+				</div>
+				<Divider />
+				<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+					<Input
+						key={"primaryGearReduction"}
+						name={"primaryGearReduction"}
+						label={"Primary Gear Reduction"}
+						isRequired
+						value={transmission.primaryGearReduction}
+						variant="bordered"
+						classNames={{
+							input: ["bg-transparent", "text-foreground", "placeholder:text-grey"],
+							inputWrapper: "border-1 border-foreground rounded-none",
+						}}
+						onChange={(e) => {
+							const { name, value } = e.target;
+							setTransmission((prev) => ({ ...prev, [name]: value }));
+						}
+						}
+					/>
+					<Input
+						key={"finalGearReduction"}
+						name={"finalGearReduction"}
+						label={"Final Gear Reduction"}
+						isRequired
+						value={transmission.finalGearReduction}
+						variant="bordered"
+						classNames={{
+							input: ["bg-transparent", "text-foreground", "placeholder:text-grey"],
+							inputWrapper: "border-1 border-foreground rounded-none",
+						}}
+						onChange={(e) => {
+							const { name, value } = e.target;
+							setTransmission((prev) => ({ ...prev, [name]: value }));
+						}
+						}
+					/>
+				</div>	
+				<Divider />
+				<div className="grid grid-cols-3 md:grid-cols-6 gap-4">
+					<Input
+						key={"1st Gear Ratio"}
+						label={"1st Gear Ratio"} 
+						isRequired
+						classNames={{
+							input: ["bg-transparent", "text-foreground", "placeholder:text-grey"],
+							inputWrapper: "border-1 border-foreground rounded-none",
+						}}
+						onChange={(e) => {
+							const { name, value } = e.target;
+							setTransmission((prev) => ({ ...prev, [name]: value }));
+						}
+						}
+						value={transmission.gearRatios[0]}
+					/>
 
-		</ModalBody>
-      <ModalFooter className="justify-end">
-        <Button color="primary" onPress={async () => { await handleAddTransmission(); onClose(); updateCallback(); }}>
-        Add Transmission
-        </Button>
-      </ModalFooter>
-      </>
-    )
-  }
+					<Input
+						key={"2nd Gear Ratio"}
+						label={"2nd Gear Ratio"} 
+						isRequired
+						classNames={{
+							input: ["bg-transparent", "text-foreground", "placeholder:text-grey"],
+							inputWrapper: "border-1 border-foreground rounded-none",
+						}}
+						onChange={(e) => {
+							const { name, value } = e.target;
+							setTransmission((prev) => ({ ...prev, [name]: value }));
+						}
+						}
+						value={transmission.gearRatios[1]}
+					/>
+
+					<Input
+						key={"3rd Gear Ratio"}
+						label={"3rd Gear Ratio"} 
+						isRequired
+						classNames={{
+							input: ["bg-transparent", "text-foreground", "placeholder:text-grey"],
+							inputWrapper: "border-1 border-foreground rounded-none",
+						}}
+						onChange={(e) => {
+							const { name, value } = e.target;
+							setTransmission((prev) => ({ ...prev, [name]: value }));
+						}
+						}
+						value={transmission.gearRatios[2]}
+					/>
+					{Array.from({ length: transmission.gearRatioSize - 3 }).map((_: any, index: number) => {
+						const i = index+4;
+						return (
+							<Input
+								key={`${i}th Gear Ratio`}
+								label={`${i}th Gear Ratio`}
+								classNames={{
+									input: ["bg-transparent", "text-foreground", "placeholder:text-grey"],
+									inputWrapper: "border-1 border-foreground rounded-none",
+								}}
+								onChange={(e) => {
+									const { name, value } = e.target;
+									setTransmission((prev) => ({ ...prev, [name]: value }));
+								}
+								}
+								value={transmission.gearRatios[i - 1]}
+							/>
+						);
+					})}
+					<div className="flex flex-col items-center justify-center">
+					<Button className="w-1/2" radius="full" color="primary" onPress={handleAddGearRatioSize} >
+						+
+					</Button>
+					</div>
+				</div>
+			</ModalBody>
+			<ModalFooter className="justify-end">
+				<Button color="primary" onPress={async () => { await handleAddTransmission(); onClose(); updateCallback(); }}>
+					Add Transmission
+				</Button>
+			</ModalFooter>
+		</>
+	)
+}
