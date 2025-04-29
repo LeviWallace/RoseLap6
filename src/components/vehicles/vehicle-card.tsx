@@ -8,14 +8,14 @@ const client = generateClient<Schema>();
 
 interface VehicleProps {
 	vehicle: Vehicle;
-	updateCallback: (vehicle: Vehicle) => void;
+	updateCallback?: (vehicle: Vehicle) => void;
 }
 
 export default function VehicleCard({vehicle, updateCallback}: VehicleProps) {
 
 	async function handleDeleteComponent() {
 		await client.models.Vehicle.delete({ id: vehicle.id });
-		updateCallback(vehicle);
+		if (updateCallback) updateCallback(vehicle);
 	}
 
 
@@ -28,12 +28,19 @@ export default function VehicleCard({vehicle, updateCallback}: VehicleProps) {
 				{vehicle.mass}
 			</CardBody>
 			<CardFooter className="justify-between">
+				{ updateCallback ? 
+				<>
 				<Button color="danger" size="sm" onPress={handleDeleteComponent}>
 					Delete
 				</Button>
 				<Button color="primary" size="sm">
 					Update
 				</Button>
+				</>	:
+				<Button color="primary" size="sm">
+					Details
+				</Button>
+				}
 			</CardFooter>
 		</Card>
 	)

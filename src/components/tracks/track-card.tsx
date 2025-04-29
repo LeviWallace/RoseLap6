@@ -7,8 +7,8 @@ import { useMount } from "@/hooks/use-mount";
 type Track = Schema['Track']['type'];
 
 interface TrackProps {
-    track: Track;
-    updateCallback: () => void;
+	track: Track;
+	updateCallback?: () => void;
 }
 
 const client = generateClient<Schema>();
@@ -23,33 +23,35 @@ const client = generateClient<Schema>();
 export default function TrackCard({track, updateCallback}: TrackProps) {
 	const [, , mountTrack] = useMount();
 
-    async function handleDeleteTrack() {
-        const { errors, data } = await client.models.Track.delete({ id: track.id });
-        console.log(errors, data);
-        updateCallback();
-    }
+	async function handleDeleteTrack() {
+		const { errors, data } = await client.models.Track.delete({ id: track.id });
+		console.log(errors, data);
+		if (updateCallback) updateCallback();
+	}
 
-    return (
-        <Card className="border rounded-none m-2 bg-background">
-            <CardHeader className="justify-between">
-                <h1 className="text-2xl font-extrabold">{track.name}</h1>
-            </CardHeader>
-            <CardBody className="flex-row justify-between">
-                <h2 className="text-md italic">{track.country}</h2>
-                <h2 className="text-md italic">{track.state}</h2>
-                <h2 className="text-md italic">{track.city}</h2>
-            </CardBody>
-            <CardFooter className="justify-between">
-                <Button color="danger" size="sm" onPress={handleDeleteTrack}>
-                    Delete Track
-                </Button>
-				<Button color="secondary" size="sm" onPress={() => { mountTrack(track); }}>
-                    Mount Track
-                </Button>
-                <Button color="primary" size="sm">
-                    View Track
-                </Button>
-            </CardFooter>
-        </Card>
-    )
+	return (
+		<Card className="border rounded-none m-2 bg-background">
+			<CardHeader className="justify-between">
+				<h1 className="text-2xl font-extrabold">{track.name}</h1>
+			</CardHeader>
+			<CardBody className="flex-row justify-between">
+				<h2 className="text-md italic">{track.country}</h2>
+				<h2 className="text-md italic">{track.state}</h2>
+				<h2 className="text-md italic">{track.city}</h2>
+			</CardBody>
+			<CardFooter className="justify-between">
+				{handleDeleteTrack && 
+				<><Button color="danger" size="sm" onPress={handleDeleteTrack}>
+					Delete Track
+				</Button>
+					<Button color="secondary" size="sm" onPress={() => { mountTrack(track); }}>
+						Mount Track
+					</Button>
+				</>}
+				<Button color="primary" size="sm">
+					View Track
+				</Button>
+			</CardFooter>
+		</Card>
+	)
 }

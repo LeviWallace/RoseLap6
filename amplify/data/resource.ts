@@ -103,20 +103,10 @@ const schema = a.schema({
 	.authorization((allow) => [allow.publicApiKey()]),
 
 		// --- TRACK MODEL
-		Shape: a.customType({
+	Shape: a.customType({
 		type: a.enum(["Straight", "LeftTurn", "RightTurn"]),
 		length: a.float(),
 		cornerRadius: a.float()
-	}),
-
-	Elevation: a.customType({
-		point: a.float(),
-		elevation: a.float(),
-	}),
-
-	Banking: a.customType({
-		point: a.float(),
-		banking: a.float(),
 	}),
 
 	Track: a
@@ -129,8 +119,6 @@ const schema = a.schema({
 		mirror: a.boolean(),
 
 		shape: a.ref('Shape').array(),
-		elevation: a.ref('Elevation').array(),
-		banking: a.ref('Banking').array(),
 	})
 	.authorization((allow) => [allow.publicApiKey()]),
 

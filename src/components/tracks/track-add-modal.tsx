@@ -1,6 +1,7 @@
 import { Button } from '@heroui/button';
 import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from '@heroui/modal';
 import { type Schema } from '@/../amplify/data/resource';
+import { Autocomplete, AutocompleteItem } from '@heroui/autocomplete';
 import { generateClient } from 'aws-amplify/api';
 import { useState } from 'react';
 import { Input } from '@heroui/input';
@@ -9,8 +10,40 @@ import {Checkbox} from "@heroui/checkbox";
 
 const client = generateClient<Schema>();
 
+const trackShapeTypes = [
+	{
+		label: "Straight",
+		value: "Straight",
+		key: "straight",
+	},
+	{
+		label: "Left Turn",
+		value: "Left Turn",
+		key: "left",
+	},
+	{
+		label: "Right Turn",
+		value: "Right Turn",
+		key: "right",
+	},
+]
 
+type TrackSchema = {
+	name: string;
+	country: string;
+	state: string;
+	city: string;
+	direction: boolean;
+	mirror: boolean;
+	shape: Shape[];
+	shapesSize: number;
+}
 
+type Shape = {
+	type: "Straight" | "LeftTurn" | "RightTurn" | null;
+	length: number;
+	cornerRadius: number;
+}
 /**
  * TrackAddModal component allows users to add a new track by providing necessary details
  * such as name, country, state, and city. It displays a modal with input fields for each
@@ -18,16 +51,14 @@ const client = generateClient<Schema>();
  *
  **/
 export default function TrackAddModal({ isOpen, onClose, updateCallback }: { isOpen: boolean, onClose: () => void, updateCallback: () => void }) {
-	const [track, setTrack] = useState({
+	const [track, setTrack] = useState<TrackSchema>({
 		name: "",
 		country: "",
 		state: "",
 		city: "",
-		direction: false,
+		direction: true,
 		mirror: false,
 		shape: [],
-		elevation: [],
-		banking: [],
 		shapesSize: 1
 	});
 
@@ -40,8 +71,6 @@ export default function TrackAddModal({ isOpen, onClose, updateCallback }: { isO
 			direction: track["direction"],
 			mirror: track["mirror"],
 			shape: track["shape"],
-			elevation: track["elevation"],
-			banking: track["banking"],
 		})
 		console.log(errors, data);
 		updateCallback();
@@ -59,7 +88,7 @@ export default function TrackAddModal({ isOpen, onClose, updateCallback }: { isO
 
 
 	return (
-		<Modal isOpen={isOpen} size='4xl' onClose={onClose} radius='none'>
+		<Modal isOpen={isOpen} size='4xl' onClose={onClose} radius='none' isDismissable={false}>
 			<ModalContent className="border-white border-1 bg-background">
 				{(onClose) => (
 					<>
@@ -121,10 +150,10 @@ export default function TrackAddModal({ isOpen, onClose, updateCallback }: { isO
 							</div>
 							<Divider />
 							<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-								<Checkbox defaultSelected radius="none" color="primary" size="sm">
+								<Checkbox defaultSelected radius="none" color="primary" size="sm" onChange={(e) => setTrack((prev) => ({ ...prev, direction: e.target.checked }))}>
 									Direction Forward?
 								</Checkbox>
-								<Checkbox radius="none" color="primary" size="sm">
+								<Checkbox radius="none" color="primary" size="sm" onChange={(e) => setTrack((prev) => ({ ...prev, mirror: e.target.checked }))}>
 									Mirror?
 								</Checkbox>
 							</div>
@@ -146,9 +175,19 @@ export default function TrackAddModal({ isOpen, onClose, updateCallback }: { isO
 												<h1>{i + 1}</h1>
 											</div>
 											<div className="flex flex-row gap-2 px-4 mx-4">
-												<Input className="h-1/6"
-													name="x"
-													label="X Coord"
+												<Autocomplete
+													key="shape"
+													isRequired
+													variant="bordered"
+													label="Shape"
+													defaultItems={trackShapeTypes}
+													value={track.shape[i] && track.shape[i].type ? track.shape[i].type : ""}
+												>
+													{(item) => <AutocompleteItem key={item.key}>{item.label}</AutocompleteItem>}
+												</Autocomplete>
+												<Input className="h-1/6 w-2/7" 
+													name="radius"
+													label="Radius"
 													key={'x' + i}
 													isRequired
 													variant="bordered"	
@@ -156,35 +195,18 @@ export default function TrackAddModal({ isOpen, onClose, updateCallback }: { isO
 														input: ["bg-transparent", "text-foreground", "placeholder:text-gray"],
 														inputWrapper: "border-1 border-foreground rounded-none",
 													}}
-												/>
-												<Input className="h-1/6"
-													name="x"
-													label="Y Coord"
-													key={'y' + i}
-													isRequired
-													variant="bordered"	
-													classNames={{
-														input: ["bg-transparent", "text-foreground", "placeholder:text-gray"],
-														inputWrapper: "border-1 border-foreground rounded-none",
+													onChange={(e) => {
+														const newShape = [...track.shape];
+														newShape[i] = { ...newShape[i], cornerRadius: parseFloat(e.target.value) };
+														setTrack((prev) => ({ ...prev, shape: newShape }));
 													}}
 												/>
-												<Input className="h-1/6"
-													name="x"
-													label="Elevation"
-													key={'e' + 1}
+												<Input className="h-1/6 w-2/7"
+													name="length"
+													label="Length"
+													key={'l' + i}
 													isRequired
-													variant="bordered"	
-													classNames={{
-														input: ["bg-transparent", "text-foreground", "placeholder:text-gray"],
-														inputWrapper: "border-1 border-foreground rounded-none",
-													}}
-												/>
-												<Input className="h-1/6"
-													name="x"
-													label="Banking"
-													key={'b' + 1}
-													isRequired
-													variant="bordered"	
+													variant="bordered"
 													classNames={{
 														input: ["bg-transparent", "text-foreground", "placeholder:text-gray"],
 														inputWrapper: "border-1 border-foreground rounded-none",
