@@ -29,7 +29,7 @@ function handleGetUsername()
  */
 export default function NavbarDropdown() {
     const [username, setUsername] = useState(handleGetUsername);
-	const [vehicle, track] = useMount();
+	const { vehicle, track } = useMount();
 
     async function handleLogout() {
         localStorage.removeItem("username");

@@ -36,13 +36,12 @@ export default function VehiclesPage() {
 
 	useEffect(() => {
 		handleGetVehicles();
-	});
+	}, []);
 
     return (
         <>
             <VehicleAddModal isOpen={isOpen} onClose={onClose} updateCallback={handleGetVehicles}></VehicleAddModal>
             <DefaultLayout>
-                <div>
                     <div className="flex justify-between items-center space-x-2">
                         <Input
                             name="vehicles"
@@ -71,8 +70,9 @@ export default function VehiclesPage() {
 							Add Vehicle 
 						</Button>
                     </div>
-					<VehicleContainer vehicles={vehicles} updateCallback={handleGetVehicles}/>
-				</div>
+					<div className="grid grid-cols-3 justify-between m-2 p-2">
+						<VehicleContainer vehicles={vehicles} updateCallback={handleGetVehicles}/>
+					</div>
             </DefaultLayout>
         </>
     )

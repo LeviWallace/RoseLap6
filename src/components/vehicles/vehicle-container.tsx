@@ -11,7 +11,7 @@ interface VehicleContainerProps {
 
 export default function VehicleContainer({ vehicles, updateCallback }: VehicleContainerProps) {
 	return (
-		<div className="grid grid-cols-3 justify-between m-2 p-2">
+		<>
 			{vehicles.map((vehicle, index) => (
 				<VehicleCard
 					key={index}
@@ -19,7 +19,7 @@ export default function VehicleContainer({ vehicles, updateCallback }: VehicleCo
 					updateCallback={updateCallback}
 				/>
 			))}
-		</div>
+		</>
 	);
 }
 

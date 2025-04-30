@@ -4,6 +4,13 @@ import { sayHelloFunctionHandler } from "../functions/say-hello/resource";
 const schema = a.schema({
 	// BACKEND DATABASE
 	// --- VEHICLE MODEL
+	TorqueCurve: a.
+		model({
+			engineSpeed: a.float(),
+			torque: a.float(),
+		})
+	.authorization((allow) => [allow.publicApiKey()]),
+
 	Vehicle: a
 	.model({
 		name: a.string(),
@@ -15,7 +22,7 @@ const schema = a.schema({
 		brakesId: a.id(),
 		engineId: a.id(),
 		transmissionId: a.id(),
-		torqueCurveId: a.id(),
+		torqueCurveIds: a.id().array(),
 	})
 	.authorization((allow) => [allow.publicApiKey()]),
 
@@ -93,14 +100,6 @@ const schema = a.schema({
 	})
 	.authorization((allow) => [allow.publicApiKey()]),
 
-		TorqueCurve: a
-	.model({
-		type: a.string().default("Torque Curve"),
-		name: a.string(),
-		rpms: a.float().array(),
-		torques: a.float().array(),
-	})
-	.authorization((allow) => [allow.publicApiKey()]),
 
 		// --- TRACK MODEL
 	Shape: a.customType({

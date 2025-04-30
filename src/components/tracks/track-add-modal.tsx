@@ -14,17 +14,17 @@ const trackShapeTypes = [
 	{
 		label: "Straight",
 		value: "Straight",
-		key: "straight",
+		key: "Straight",
 	},
 	{
 		label: "Left Turn",
 		value: "Left Turn",
-		key: "left",
+		key: "Left Turn",
 	},
 	{
 		label: "Right Turn",
 		value: "Right Turn",
-		key: "right",
+		key: "Right Turn",
 	},
 ]
 
@@ -63,6 +63,7 @@ export default function TrackAddModal({ isOpen, onClose, updateCallback }: { isO
 	});
 
 	async function handleAddTrack() {
+
 		const { errors, data } = await client.models.Track.create({
 			name: track["name"],
 			country: track["country"],
@@ -70,7 +71,7 @@ export default function TrackAddModal({ isOpen, onClose, updateCallback }: { isO
 			city: track["city"],
 			direction: track["direction"],
 			mirror: track["mirror"],
-			shape: track["shape"],
+			shape: track["shape"]
 		})
 		console.log(errors, data);
 		updateCallback();
@@ -84,6 +85,19 @@ export default function TrackAddModal({ isOpen, onClose, updateCallback }: { isO
 
 	function handleAddShapeSize() {
 		setTrack((prev) => ({ ...prev, shapesSize: prev.shapesSize + 1 }));
+	}
+
+	function handleClearData() {
+		setTrack({
+			name: "",
+			country: "",
+			state: "",
+			city: "",
+			direction: true,
+			mirror: false,
+			shape: [],
+			shapesSize: 1
+		});
 	}
 
 
@@ -182,6 +196,12 @@ export default function TrackAddModal({ isOpen, onClose, updateCallback }: { isO
 													label="Shape"
 													defaultItems={trackShapeTypes}
 													value={track.shape[i] && track.shape[i].type ? track.shape[i].type : ""}
+													onSelectionChange={(item) => {
+														const newShape = [...track.shape];
+														const shape = item as "Straight" | "LeftTurn" | "RightTurn";
+														newShape[i] = { ...newShape[i], type: shape };
+														setTrack((prev) => ({ ...prev, shape: newShape }));
+													}}
 												>
 													{(item) => <AutocompleteItem key={item.key}>{item.label}</AutocompleteItem>}
 												</Autocomplete>
@@ -211,6 +231,11 @@ export default function TrackAddModal({ isOpen, onClose, updateCallback }: { isO
 														input: ["bg-transparent", "text-foreground", "placeholder:text-gray"],
 														inputWrapper: "border-1 border-foreground rounded-none",
 													}}
+													onChange={(e) => {
+														const newShape = [...track.shape];
+														newShape[i] = { ...newShape[i], length: parseFloat(e.target.value) };
+														setTrack((prev) => ({ ...prev, shape: newShape }));
+													}}
 												/>
 											</div>
 										</div>
@@ -220,7 +245,7 @@ export default function TrackAddModal({ isOpen, onClose, updateCallback }: { isO
 
 						</ModalBody>
 						<ModalFooter className="justify-end">
-							<Button color="primary" onPress={() => { handleAddTrack(); onClose(); }}>
+							<Button color="primary" onPress={() => { handleAddTrack(); handleClearData(); onClose(); }}>
 								Add
 							</Button>
 						</ModalFooter>

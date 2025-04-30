@@ -76,7 +76,6 @@ export default function TracksPage() {
         <>
         <TrackAddModal isOpen={isOpen} onClose={onClose} updateCallback={handleGetTracks}></TrackAddModal>
         <DefaultLayout>
-            <div className="grid grid-cols-12"></div>
                 <div className="flex justify-between items-center space-x-2">
                     <Input
                         name="tracks"
@@ -105,7 +104,7 @@ export default function TracksPage() {
 						Add Track
 					</Button>
                 </div>
-            <div className="grid grid-cols12">
+            <div className="grid grid-cols-3 justify-between m-2 p-2">
                 <TrackContainer tracks={tracks} updateCallback={handleGetTracks}/>
             </div>
         </DefaultLayout>

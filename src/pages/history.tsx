@@ -1,6 +1,7 @@
 import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
 import bg from "@/assets/history-bg.jpg";
+import { Divider } from "@heroui/divider";
 
 export default function HistoryPage() {
 	return (
@@ -15,8 +16,11 @@ export default function HistoryPage() {
 					</div>
 				</div>
 			</div>
-			<div className="flex flex-col min-h-screen text-left">
-				<h1 className="mt-4 text-9xl font-bold font-geist tracking-tighter text-primary">ROSE-HULMAN GRAND PRIX ENGINEERING</h1>
+			<div className="flex flex-col min-h-screen items-center text-center">
+				<div className="w-4/5">
+					<h1 className="mt-4 text-8xl font-bold font-geist tracking-tighter text-primary">ROSE-HULMAN GRAND PRIX ENGINEERING</h1>
+					<Divider />
+				</div>
 				<p className="text-white text-2xl font-geist m-6">Founded in 2011, the Rose-Hulman Grand Prix Engineering team is a student-driven competition team, offering hands-on experience in designing, building, and racing formula-style cars.</p>
 			</div>
 			<div className="absolute w-full b-0">

@@ -2,6 +2,8 @@ import { Card, CardBody, CardFooter, CardHeader } from "@heroui/card";
 import { Button } from "@heroui/button";
 import { Schema } from "../../../amplify/data/resource";
 import { generateClient } from "aws-amplify/api";
+import { useMount } from "@/hooks/use-mount";
+
 type Vehicle = Schema["Vehicle"]['type'];
 
 const client = generateClient<Schema>();
@@ -12,10 +14,17 @@ interface VehicleProps {
 }
 
 export default function VehicleCard({vehicle, updateCallback}: VehicleProps) {
+	const { vehicle: v, mountVehicle, unmountVehicle } = useMount();
 
 	async function handleDeleteComponent() {
 		await client.models.Vehicle.delete({ id: vehicle.id });
-		if (updateCallback) updateCallback(vehicle);
+
+		if (updateCallback) {
+			if (v?.id === vehicle.id) {
+				unmountVehicle();
+			}
+			updateCallback(vehicle);
+		}
 	}
 
 
@@ -28,18 +37,19 @@ export default function VehicleCard({vehicle, updateCallback}: VehicleProps) {
 				{vehicle.mass}
 			</CardBody>
 			<CardFooter className="justify-between">
-				{ updateCallback ? 
-				<>
-				<Button color="danger" size="sm" onPress={handleDeleteComponent}>
-					Delete
-				</Button>
-				<Button color="primary" size="sm">
-					Update
-				</Button>
-				</>	:
-				<Button color="primary" size="sm">
-					Details
-				</Button>
+				{ updateCallback &&
+						<Button color="danger" size="sm" onPress={handleDeleteComponent}>
+							Delete
+						</Button>
+				}
+				{ v?.id === vehicle.id ?
+					<Button color="danger" size="sm" onPress={() => { unmountVehicle() }}>
+						Unmount
+					</Button>
+					:
+					<Button color="primary" size="sm" onPress={() => { mountVehicle(vehicle) }}>
+						Mount
+					</Button>
 				}
 			</CardFooter>
 		</Card>

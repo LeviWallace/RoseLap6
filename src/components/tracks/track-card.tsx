@@ -21,7 +21,7 @@ const client = generateClient<Schema>();
  * @returns {JSX.Element} The TrackCard component.
  */
 export default function TrackCard({track, updateCallback}: TrackProps) {
-	const [, , mountTrack] = useMount();
+	const { mountTrack } = useMount();
 
 	async function handleDeleteTrack() {
 		const { errors, data } = await client.models.Track.delete({ id: track.id });
@@ -40,16 +40,13 @@ export default function TrackCard({track, updateCallback}: TrackProps) {
 				<h2 className="text-md italic">{track.city}</h2>
 			</CardBody>
 			<CardFooter className="justify-between">
-				{handleDeleteTrack && 
-				<><Button color="danger" size="sm" onPress={handleDeleteTrack}>
-					Delete Track
-				</Button>
-					<Button color="secondary" size="sm" onPress={() => { mountTrack(track); }}>
-						Mount Track
+				{ updateCallback &&
+					<Button color="danger" size="sm" onPress={handleDeleteTrack}>
+						Delete
 					</Button>
-				</>}
-				<Button color="primary" size="sm">
-					View Track
+				}
+				<Button color="primary" size="sm" onPress={() => { mountTrack(track); }}>
+					Mount
 				</Button>
 			</CardFooter>
 		</Card>
