@@ -1,8 +1,8 @@
 import json
 import boto3
 
-dynamodb = boto3.resource('dynamodb')
-track = dynamodb.Table("Track")
+dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
+track = dynamodb.Table("Track-nxbm7lb2srcidguvzbwydc5jqi-NONE")
 
 def handler(event, context):
     vehicleId = event['arguments']['vehicleId']
@@ -20,15 +20,18 @@ def handler(event, context):
         if item:
             return {
                 "statusCode": 200,
-                "body": json.dumps(item)
+                "body": {
+                    "city": item["city"]
+                }
             }
         else:
             return {
                 "statusCode": 404,
-                "body": json.dumps({"error": "Item not found"})
+                "body": json.dumps({"error": "Item not found", "item": trackId})
             }
     except Exception as e:
         return {
             "statusCode": 500,
             "body": json.dumps({"error": str(e)})
         }
+
