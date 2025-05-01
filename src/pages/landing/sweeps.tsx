@@ -35,7 +35,7 @@ export default function SweepsPage(){
 		const allTracks = data as Track[];
 		setTracks(allTracks);
 	}	
-	
+
 	async function handleGetVehicles() {
 		const {data, errors} = await client.models.Vehicle.list();
 
@@ -48,7 +48,18 @@ export default function SweepsPage(){
 	}
 
 	async function handleClick() {
-		return 1;
+		if (!vehicle || !track) {
+			return;
+		}
+		client.queries.simulate({
+			vehicleId: vehicle.id,
+			trackId: track.id
+		}).then((res) => {
+			console.log(res) ;
+		}).catch((err) => {
+			console.error(err);
+		}
+				)
 	}
 
 
@@ -67,9 +78,9 @@ export default function SweepsPage(){
 					<div className="w-full text-center">
 						{(track && vehicle) ?
 
-						<Button className="my-2" onPress={handleClick}>Simulate</Button>	
-						:
-						<h2 className="text-3xl font-bold">Mounted</h2>
+							<Button className="my-2" onPress={handleClick}>Simulate</Button>	
+							:
+							<h2 className="text-3xl font-bold">Mounted</h2>
 
 						}
 					</div>

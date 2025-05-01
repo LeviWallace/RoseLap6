@@ -7,9 +7,9 @@ import { Code, Function, Runtime } from "aws-cdk-lib/aws-lambda";
 
 const functionDir = path.dirname(fileURLToPath(import.meta.url));
 
-export const sayHelloFunctionHandler = defineFunction(
+export const simulateFunctionHandler = defineFunction(
 		(scope) =>
-		new Function(scope, "say-hello", {
+		new Function(scope, "simulate", {
 				handler: "index.handler",
 				runtime: Runtime.PYTHON_3_9, // or any other python version
 				timeout: Duration.seconds(20), //  default is 3 seconds

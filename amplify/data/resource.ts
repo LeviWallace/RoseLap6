@@ -1,5 +1,5 @@
 import { type ClientSchema, a, defineData } from "@aws-amplify/backend";
-import { sayHelloFunctionHandler } from "../functions/say-hello/resource";
+import { simulateFunctionHandler } from "../functions/simulate/resource";
 
 const schema = a.schema({
 	// BACKEND DATABASE
@@ -130,13 +130,14 @@ const schema = a.schema({
 	.authorization((allow) => [allow.publicApiKey()]),
 		// FUNCTIONS
 
-	sayHello: a
+	simulate: a
 	.query()
 	.arguments({
-		name: a.string(),
+		vehicleId: a.id(),
+		trackId: a.id(),
 	})
 	.returns(a.string())
-	.handler(a.handler.function(sayHelloFunctionHandler))
+	.handler(a.handler.function(simulateFunctionHandler))
 	.authorization((allow: any) => [allow.publicApiKey()]),
 });
 
