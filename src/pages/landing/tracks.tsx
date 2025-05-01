@@ -104,7 +104,7 @@ export default function TracksPage() {
 						Add Track
 					</Button>
                 </div>
-            <div className="grid grid-cols-3 justify-between m-2 p-2">
+			<div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 justify-between m-2 p-2">
                 <TrackContainer tracks={tracks} updateCallback={handleGetTracks}/>
             </div>
         </DefaultLayout>

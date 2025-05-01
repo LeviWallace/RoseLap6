@@ -21,33 +21,54 @@ const client = generateClient<Schema>();
  * @returns {JSX.Element} The TrackCard component.
  */
 export default function TrackCard({track, updateCallback}: TrackProps) {
-	const { mountTrack } = useMount();
+	const { track: t, mountTrack, unmountTrack } = useMount();
 
 	async function handleDeleteTrack() {
 		const { errors, data } = await client.models.Track.delete({ id: track.id });
 		console.log(errors, data);
-		if (updateCallback) updateCallback();
+		if (updateCallback) {
+			if (t?.id === track.id) {
+				unmountTrack();
+			}
+			updateCallback();
+		}
 	}
 
 	return (
-		<Card className="border rounded-none m-2 bg-background">
+		<Card className="border rounded-xl m-2 bg-background min-w-[450px] w-[450px] min-h-[200px] h-[200px]">
 			<CardHeader className="justify-between">
 				<h1 className="text-2xl font-extrabold">{track.name}</h1>
 			</CardHeader>
-			<CardBody className="flex-row justify-between">
-				<h2 className="text-md italic">{track.country}</h2>
-				<h2 className="text-md italic">{track.state}</h2>
-				<h2 className="text-md italic">{track.city}</h2>
+			<CardBody className="flex flex-row w-full justify-evenly gap-2 pt-0">
+				<div className="flex flex-col text-center">
+					<h1 className="text-2xl font-bold tracking-tighter">Country</h1>
+					<p className="font-thin">{track.country}</p>
+				</div>
+				<div className="flex flex-col text-center">
+					<h1 className="text-2xl font-bold tracking-tigher">State</h1>
+					<p className="font-thin">{track.state}</p>
+				</div>
+				<div className="flex flex-col text-center">
+					<h1 className="text-2xl font-bold tracking-tigher">Track City</h1>
+					<p className="text-md font-thin">{track.city}</p>
+				</div>
 			</CardBody>
 			<CardFooter className="justify-between">
 				{ updateCallback &&
-					<Button color="danger" size="sm" onPress={handleDeleteTrack}>
+					<Button color="primary" size="sm" onPress={handleDeleteTrack}>
 						Delete
 					</Button>
 				}
-				<Button color="primary" size="sm" onPress={() => { mountTrack(track); }}>
-					Mount
-				</Button>
+				{ track.id === t?.id ?
+					<Button color="secondary" size="sm" onPress={() => { unmountTrack(); }}>
+						Dismount
+					</Button>
+					:
+					<Button color="secondary" size="sm" onPress={() => { mountTrack(track); }}>
+						Mount
+					</Button>
+				}
+
 			</CardFooter>
 		</Card>
 	)

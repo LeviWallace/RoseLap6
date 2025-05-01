@@ -12,7 +12,7 @@ function Footer() {
                     <h1 className="text-foreground text-4xl italic tracking-tight inline font-semibold">6</h1>
                 </div>
                 <h3 className="italic text-foreground font-thin">Rose-Hulman Institute of Technology's Formula SAE Team</h3>
-                <h4 className="italic text-foreground font-thin">© RoseLap 2024</h4>
+                <h4 className="italic text-foreground font-thin">© RoseLap 2025</h4>
             </div>
             <div className="col-start-9 grid-col col-span-1 my-5 mx-10">
                 <h5 className="font-bold text-foreground">Help</h5>

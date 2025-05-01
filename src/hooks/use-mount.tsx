@@ -18,22 +18,30 @@ const MountContext = createContext<MountContextType | undefined>(undefined);
 export function MountProvider({ children }: { children: ReactNode }) {
 	const [vehicle, setVehicle] = useState<Vehicle | undefined>(() => {
 		const vehicle = localStorage.getItem("vehicle");
+		if (vehicle === "undefined") {
+			localStorage.removeItem("vehicle");
+			return undefined;
+		}
 		return vehicle ? JSON.parse(vehicle) : undefined;
 	});
 	
 	const [track, setTrack] = useState<Track | undefined>(() => {
 		const track = localStorage.getItem("track");
+		if (track === "undefined") {
+			localStorage.removeItem("track");
+			return undefined;
+		}
 		return track ? JSON.parse(track) : undefined;
 	});
 
     function mountVehicle(v: Vehicle) {
 		setVehicle(v);
-		localStorage.setItem("vehicle", JSON.stringify(vehicle));
+		localStorage.setItem("vehicle", JSON.stringify(v));
     }
 
     function mountTrack(t: Track) {
 		setTrack(t);
-		localStorage.setItem("track", JSON.stringify(track));
+		localStorage.setItem("track", JSON.stringify(t));
     }
 
 	function unmountVehicle() {

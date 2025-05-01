@@ -36,7 +36,7 @@ export const siteConfig = {
       href: "/landing/tracks",
     },
     {
-      label: "Previous Sweeps",
+      label: "Sweeps",
       href: "/landing/sweeps",
     },
     {
