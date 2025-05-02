@@ -10,8 +10,8 @@ import { useEffect } from 'react';
 
 const client = generateClient<Schema>();
 type Component = { id: string, name: string };
-type TorqueCurve = { id: string, engineSpeed: number, torque: number };
-type VehicleConfig = {name: string | undefined, mass: string | undefined, frontMassDistribution: string | undefined, tire: Component | undefined, aerodynamics: Component | undefined, brakes: Component | undefined, engine: Component | undefined, transmission: Component | undefined, torqueCurve: TorqueCurve[] | undefined, torqueCurveSize: number};
+type TorqueCurve = { engineSpeed: number, torque: number };
+type VehicleConfig = {name: string | undefined, mass: string | undefined, frontMassDistribution: string | undefined, tire: Component | undefined, aerodynamics: Component | undefined, brakes: Component | undefined, engine: Component | undefined, transmission: Component | undefined, torqueCurves: TorqueCurve[], torqueCurveSize: number};
 
 export default function VehicleAddModal({isOpen, onClose, updateCallback}: {isOpen: boolean, onClose: () => void, updateCallback: () => void}) {
 	const [vehicle, setVehicle] = useState<VehicleConfig>({
@@ -24,7 +24,7 @@ export default function VehicleAddModal({isOpen, onClose, updateCallback}: {isOp
 		brakes: undefined,
 		engine: undefined,
 		transmission: undefined,
-		torqueCurve: [],
+		torqueCurves: [],
 		torqueCurveSize: 1,
 	});
 
@@ -62,31 +62,13 @@ export default function VehicleAddModal({isOpen, onClose, updateCallback}: {isOp
 
 	async function handleAddVehicle() {
 
-		const torqueCurveIds: string[] = [];
-		// Create torque curve
-		for (let i = 0; i < vehicle.torqueCurveSize; i++) {
-			const torqueCurve = vehicle.torqueCurve ? vehicle.torqueCurve[i] : undefined;
-			if (torqueCurve === undefined) {
-				continue;
-			}
-			const { errors, data } = await client.models.TorqueCurve.create({
-				engineSpeed: torqueCurve.engineSpeed,
-				torque: torqueCurve.torque,
-			});
-			if (errors) {
-				console.error("Torque Error: ", errors);
-				return;
-			}
-			if (data)
-				torqueCurveIds.push(data.id);
-		}
-
-		// Create vehicle
-		console.log(vehicle);
-		if (vehicle.tire === undefined || vehicle.aerodynamics === undefined || vehicle.brakes === undefined || vehicle.engine === undefined || vehicle.transmission === undefined || vehicle.torqueCurve === undefined) {
+		if (vehicle.tire === undefined || vehicle.aerodynamics === undefined || vehicle.brakes === undefined || vehicle.engine === undefined || vehicle.transmission === undefined || vehicle.torqueCurves === undefined) {
 			console.error('Missing components');
 			return
 		}
+		
+		console.log(vehicle);
+
 		const { errors, data } = await client.models.Vehicle.create({
 			name: vehicle.name,
 			mass: vehicle.mass ? parseInt(vehicle.mass) : undefined,
@@ -96,7 +78,7 @@ export default function VehicleAddModal({isOpen, onClose, updateCallback}: {isOp
 			brakesId: vehicle.brakes.id,
 			engineId: vehicle.engine.id,
 			transmissionId: vehicle.transmission.id,
-			torqueCurveIds: torqueCurveIds,
+			torqueCurves: vehicle.torqueCurves,
 		})
 		console.log(errors, data);
 		updateCallback();
@@ -123,7 +105,7 @@ export default function VehicleAddModal({isOpen, onClose, updateCallback}: {isOp
 			brakes: undefined,
 			engine: undefined,
 			transmission: undefined,
-			torqueCurve: [],
+			torqueCurves: [],
 			torqueCurveSize: 1,
 		});
 	}
@@ -276,9 +258,9 @@ export default function VehicleAddModal({isOpen, onClose, updateCallback}: {isOp
 											<Input
 												name={`e-${index}`}
 												onChange={(e) => {
-													const newTorqueCurve = [...(vehicle.torqueCurve || [])];
-													newTorqueCurve[index] = { ...newTorqueCurve[index], engineSpeed: parseInt(e.target.value) };
-													setVehicle((prev) => ({ ...prev, torqueCurve: newTorqueCurve }));
+													const newTorqueCurves = [...vehicle.torqueCurves];
+													newTorqueCurves[index] = { ...newTorqueCurves[index], engineSpeed: parseInt(e.target.value) };
+													setVehicle((prev) => ({ ...prev, torqueCurves: newTorqueCurves }));
 												}}
 												type="text"
 												label="Engine Speed"
@@ -289,11 +271,11 @@ export default function VehicleAddModal({isOpen, onClose, updateCallback}: {isOp
 												}}
 											/>
 											<Input
-												name={`t-{index}`}
+												name={`t-${index}`}
 												onChange={(e) => {
-													const newTorqueCurve = [...(vehicle.torqueCurve || [])];
-													newTorqueCurve[index] = { ...newTorqueCurve[index], torque: parseInt(e.target.value) };
-													setVehicle((prev) => ({ ...prev, torqueCurve: newTorqueCurve }));
+													const newTorqueCurves = [...vehicle.torqueCurves];
+													newTorqueCurves[index] = { ...newTorqueCurves[index], torque: parseInt(e.target.value) };
+													setVehicle((prev) => ({ ...prev, torqueCurves: newTorqueCurves }));
 												}}
 												type="text"
 												label="Torque"

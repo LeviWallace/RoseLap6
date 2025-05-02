@@ -5,11 +5,10 @@ const schema = a.schema({
 	// BACKEND DATABASE
 	// --- VEHICLE MODEL
 	TorqueCurve: a.
-		model({
+		customType({
 			engineSpeed: a.float(),
 			torque: a.float(),
-		})
-	.authorization((allow) => [allow.publicApiKey()]),
+		}),
 
 	Vehicle: a
 	.model({
@@ -22,7 +21,7 @@ const schema = a.schema({
 		brakesId: a.id(),
 		engineId: a.id(),
 		transmissionId: a.id(),
-		torqueCurveIds: a.id().array(),
+		torqueCurves: a.ref("TorqueCurve").array(),
 	})
 	.authorization((allow) => [allow.publicApiKey()]),
 
