@@ -39,6 +39,9 @@ export default function AddTireComponent({onClose, updateCallback}: { onClose: (
 			longitudinalFrictionSensitivity: tire.longitudinalFrictionSensitivity,
 			lateralFrictionCoefficient: tire.lateralFrictionCoefficient,
 			lateralFrictionLoadRating: tire.lateralFrictionLoadRating,
+			lateralFrictionSensitivity: tire.lateralFrictionSensitivity,
+			frontCorneringStiffness: tire.frontCorneringStiffness,
+			rearCorneringStiffness: tire.rearCorneringStiffness,
 		});
 		if (errors) {
 			console.log(errors);
@@ -149,7 +152,7 @@ export default function AddTireComponent({onClose, updateCallback}: { onClose: (
 				<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
 					<Input
 						key={"longitudinalFrictionCoefficient"}
-						name={"logitudinalFrictionCoefficient"}
+						name={"longitudinalFrictionCoefficient"}
 						label={"Longitudinal Friction Coefficient"}
 						value={tire.longitudinalFrictionCoefficient}
 						variant="bordered"

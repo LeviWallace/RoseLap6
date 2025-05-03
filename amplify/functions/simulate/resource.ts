@@ -11,8 +11,8 @@ export const simulateFunctionHandler = defineFunction(
 		(scope) =>
 		new Function(scope, "simulate", {
 				handler: "index.handler",
-				runtime: Runtime.PYTHON_3_9, // or any other python version
-				timeout: Duration.seconds(20), //  default is 3 seconds
+				runtime: Runtime.PYTHON_3_10, // or any other python version
+				timeout: Duration.seconds(40), //  default is 3 seconds
 				code: Code.fromAsset(functionDir, {
 						bundling: {
 								image: DockerImage.fromRegistry("dummy"), // replace with desired image from AWS ECR Public Gallery
@@ -21,7 +21,7 @@ export const simulateFunctionHandler = defineFunction(
 												execSync(
 														`python3 -m pip install -r ${path.join(functionDir, "requirements.txt")} -t ${path.join(outputDir)} --platform manylinux2014_x86_64 --only-binary=:all:`
 												);
-												execSync(`cp -r ${functionDir}/* ${path.join(outputDir)}`);
+												execSync(`cp ${path.join(functionDir, "index.py")} ${outputDir}`);
 												return true;
 										},
 								},

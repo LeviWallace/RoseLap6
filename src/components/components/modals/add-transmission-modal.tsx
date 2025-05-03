@@ -27,11 +27,23 @@ const transmissionDriveTypes = [
 	},
 ]
 
+type TransmissionType = {
+	name: string | undefined;
+	driveType: string | undefined;
+	gearShiftTime: string | undefined;
+	primaryGearEfficiency: string | undefined;
+	finalGearEfficiency: string | undefined;
+	gearboxEfficiency: string | undefined;
+	primaryGearReduction: string | undefined;
+	finalGearReduction: string | undefined;
+	gearRatios: string[];
+	gearRatioSize: number;
+}
+
 export default function AddTransmissionComponent({onClose, updateCallback}: { onClose: () => void, updateCallback: () => void }) {
-	const [transmission, setTransmission] = useState({
+	const [transmission, setTransmission] = useState<TransmissionType>({
 		name: undefined,
 		driveType: undefined,
-		finalDriveRatio: undefined,
 		gearShiftTime: undefined,
 		primaryGearEfficiency: undefined,
 		finalGearEfficiency: undefined,
@@ -45,16 +57,22 @@ export default function AddTransmissionComponent({onClose, updateCallback}: { on
 
 
 	async function handleAddTransmission() {
+		console.log(transmission);
 		const { errors } = await client.models.Transmission.create({
 			name: transmission.name,
-			driveType: transmission.driveType,
-			gearShiftTime: transmission.gearShiftTime,
-			primaryGearEfficiency: transmission.primaryGearEfficiency,
-			finalGearEfficiency: transmission.finalDriveRatio,
-			gearboxEfficiency: transmission.gearboxEfficiency,
-			primaryGearReduction: transmission.primaryGearReduction,
-			finalGearReduction: transmission.finalGearReduction,
-			gearRatios: transmission.gearRatios,
+			driveType: transmission.driveType as "FrontWheelDrive" | "RearWheelDrive" | "AllWheelDrive",
+			gearShiftTime: parseInt(transmission.gearShiftTime || "0"),
+			primaryGearEfficiency: parseFloat(transmission.primaryGearEfficiency || "0"),
+			finalGearEfficiency: parseFloat(transmission.finalGearEfficiency || "0"),
+			gearboxEfficiency: parseFloat(transmission.gearboxEfficiency || "0"),
+			primaryGearReduction: parseFloat(transmission.primaryGearReduction || "0"),
+			finalGearReduction: parseFloat(transmission.finalGearReduction || "0"),
+			gearRatios: transmission.gearRatios.map((ratio, index) => {
+				if (index < transmission.gearRatioSize) {
+					return parseFloat(ratio || "0");
+				}
+				return 0;
+			}),
 		});
 		if (errors) {
 			console.log(errors);
@@ -102,7 +120,13 @@ export default function AddTransmissionComponent({onClose, updateCallback}: { on
 						variant="bordered"
 						label="Drive Type"
 						defaultItems={transmissionDriveTypes}
-						value={transmission.driveType}
+						value={transmission.driveType as string}
+						onSelectionChange={(item) => {
+							const selectedItem = transmissionDriveTypes.find((i) => i.value === item);
+							setTransmission((prev) => ({ ...prev, driveType: selectedItem?.value }));
+								
+						}}
+
 					>
 						{(item) => <AutocompleteItem key={item.key}>{item.label}</AutocompleteItem>}
 					</Autocomplete>
@@ -226,13 +250,14 @@ export default function AddTransmissionComponent({onClose, updateCallback}: { on
 							inputWrapper: "border-1 border-foreground rounded-none",
 						}}
 						onChange={(e) => {
-							const { name, value } = e.target;
-							setTransmission((prev) => ({ ...prev, [name]: value }));
+							const { value } = e.target;
+							const newGearRatios = [...transmission.gearRatios]
+							newGearRatios[0] = value;
+							setTransmission((prev) => ({ ...prev, gearRatios: newGearRatios }));
 						}
 						}
 						value={transmission.gearRatios[0]}
 					/>
-
 					<Input
 						key={"2nd Gear Ratio"}
 						label={"2nd Gear Ratio"} 
@@ -242,8 +267,10 @@ export default function AddTransmissionComponent({onClose, updateCallback}: { on
 							inputWrapper: "border-1 border-foreground rounded-none",
 						}}
 						onChange={(e) => {
-							const { name, value } = e.target;
-							setTransmission((prev) => ({ ...prev, [name]: value }));
+							const { value } = e.target;
+							const newGearRatios = [...transmission.gearRatios]
+							newGearRatios[1] = value;
+							setTransmission((prev) => ({ ...prev, gearRatios: newGearRatios }));
 						}
 						}
 						value={transmission.gearRatios[1]}
@@ -258,8 +285,10 @@ export default function AddTransmissionComponent({onClose, updateCallback}: { on
 							inputWrapper: "border-1 border-foreground rounded-none",
 						}}
 						onChange={(e) => {
-							const { name, value } = e.target;
-							setTransmission((prev) => ({ ...prev, [name]: value }));
+							const { value } = e.target;
+							const newGearRatios = [...transmission.gearRatios]
+							newGearRatios[2] = value;
+							setTransmission((prev) => ({ ...prev, gearRatios: newGearRatios }));
 						}
 						}
 						value={transmission.gearRatios[2]}
@@ -275,8 +304,10 @@ export default function AddTransmissionComponent({onClose, updateCallback}: { on
 									inputWrapper: "border-1 border-foreground rounded-none",
 								}}
 								onChange={(e) => {
-									const { name, value } = e.target;
-									setTransmission((prev) => ({ ...prev, [name]: value }));
+									const { value } = e.target;
+									const newGearRatios = [...transmission.gearRatios]
+									newGearRatios[i - 1] = value;
+									setTransmission((prev) => ({ ...prev, gearRatios: newGearRatios }));
 								}
 								}
 								value={transmission.gearRatios[i - 1]}
