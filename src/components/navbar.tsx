@@ -21,7 +21,7 @@ import NavbarDropdown from "./navbar-dropdown";
 
 export default function Navbar() {
   return (
-    <NextUINavbar className="bg-transparent" isBlurred={false} shouldHideOnScroll maxWidth="full" position="sticky">
+	  <NextUINavbar className="bg-transparent" isBlurred={false} shouldHideOnScroll maxWidth="full" position="sticky" classNames={{ item: 'mix-blend-difference' }}>
     <NavbarBrand>
         <Link
           className="flex justify-start items-center"
@@ -42,7 +42,7 @@ export default function Navbar() {
                 className="text-lg font-semibold tracking-tight"
                 href={item.href}
               >
-                {item.label}
+				  {item.label}
               </Link>
             </NavbarItem>
           ))}

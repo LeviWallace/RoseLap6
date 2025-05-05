@@ -7,7 +7,10 @@ import IndexPage from "@/pages/index";
 import HistoryPage from "@/pages/history";
 import AuthenticationPage from "@/pages/auth";
 import LandingPage from "@/pages/landing";
-// import VehiclesPage from "@/pages/landing/vehicles";
+
+import SimulatePage from "./pages/simulate";
+import SimulationPage from "./pages/simulation";
+
 import TracksPage from "./pages/landing/tracks";
 import ComponentsPage from "./pages/landing/components";
 import VehiclesPage from "./pages/landing/vehicles";
@@ -54,7 +57,15 @@ function App() {
 				<Route element={<AuthenticationPage />} path="/auth" />
 				<Route element={<HistoryPage />} path="/history" />
 				{/* Landing Page */}
-				<Route  element={<ProtectedRoute> <LandingPage /> </ProtectedRoute>} path="/landing" />
+				<Route element={<ProtectedRoute> <LandingPage /> </ProtectedRoute>} path="/landing" />
+
+				{/* Simulate */}
+				<Route element={<ProtectedRoute> <SimulatePage /> </ProtectedRoute>} path="/simulate" />
+
+				{/* Simulation */}
+				<Route element={<ProtectedRoute> <SimulationPage id="123" /> </ProtectedRoute>} path="/simulation/:id" />
+
+				{/* Redirect to landing page */}
 
 				{/* Personal Account */}
 				<Route element={<TracksPage />} path="/landing/tracks" />

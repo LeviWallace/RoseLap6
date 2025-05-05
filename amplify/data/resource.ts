@@ -129,6 +129,14 @@ const schema = a.schema({
 	.authorization((allow) => [allow.publicApiKey()]),
 		// FUNCTIONS
 
+	Simulation: a
+	.model({
+		vehicle: a.id().required(),
+		track: a.id().required(),
+		startTime: a.date(),
+		endTime: a.date(),
+	}).authorization((allow) => [allow.publicApiKey()]),
+
 	simulate: a
 	.query()
 	.arguments({

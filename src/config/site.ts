@@ -22,9 +22,13 @@ export const siteConfig = {
       href: "/",
     },
     {
-      label: "My Account",
+      label: "Dashboard",
       href: "/landing",
     },
+	{ 
+	  label: "Simulate",
+	  href: "/simulate",
+	},
     {
       label: "History",
       href: "/history",
