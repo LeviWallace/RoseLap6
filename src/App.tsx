@@ -63,7 +63,7 @@ function App() {
 				<Route element={<ProtectedRoute> <SimulatePage /> </ProtectedRoute>} path="/simulate" />
 
 				{/* Simulation */}
-				<Route element={<ProtectedRoute> <SimulationPage id="123" /> </ProtectedRoute>} path="/simulation/:id" />
+				<Route element={<ProtectedRoute> <SimulationPage/> </ProtectedRoute>} path="/simulation" />
 
 				{/* Redirect to landing page */}
 

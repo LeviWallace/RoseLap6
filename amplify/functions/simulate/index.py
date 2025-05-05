@@ -1,5 +1,6 @@
 import json
 import boto3
+import uuid
 import numpy as np
 import time
 import math
@@ -91,6 +92,7 @@ def handler(event, context):
     simulation_props = calculate_vehicle_model(vehicle, brakes, tire, transmission, aerodynamics, engine)
 
     item = {
+        'id': uuid.uuid4().hex,
         'vehicle': vehicle_id,
         'track': track_id
     }    
@@ -99,7 +101,11 @@ def handler(event, context):
         Item=item
     )
 
-    return simulation_props
+    return {
+        "message": {
+            "success": 1,
+        }
+    }
 
 
 ### VEHICLE
@@ -241,9 +247,9 @@ def calculate_vehicle_model(vehicle, brakes, tire, transmission, aerodynamics, e
     return {
         "message": {
             "rownames": rownames,
-            "shift_points": shift_points,
-            "arrive_points": arrive_points,
-            "rev_drops": rev_drops,
+            "shift_points": shift_points.tolist(),
+            "arrive_points": arrive_points.tolist(),
+            "rev_drops": rev_drops.tolist(),
             "vehicle_speed": vehicle_speed,
         }
     }
