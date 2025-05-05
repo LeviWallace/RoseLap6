@@ -1,5 +1,6 @@
 import json
 import boto3
+import time
 import math
 from scipy.interpolate import interp1d
 
@@ -14,7 +15,15 @@ brakes_table = dynamodb.Table("Brakes-nxbm7lb2srcidguvzbwydc5jqi-NONE")
 engine_table = dynamodb.Table("Engine-nxbm7lb2srcidguvzbwydc5jqi-NONE")
 tire_table = dynamodb.Table("Tire-nxbm7lb2srcidguvzbwydc5jqi-NONE")
 
+handler_time = None
+brake_modal_time = None
+steering_model_time = None
+driveline_model_time = None
+
+
 def handler(event, context):
+    handler_time = time.time()
+
     vehicle_id = event['arguments']['vehicleId']
     track_id = event['arguments']['trackId']
 
@@ -61,6 +70,7 @@ def handler(event, context):
             })
         }
 
+    handler_time = time.time() - handler_time
     return calculate_driveline_model(vehicle, transmission, tire)
 
 def load_table(table, id):
@@ -137,6 +147,7 @@ def calculate_steering_model(tire, frontMassDistribution):
 def calculate_driveline_model(vehicle, transmission, tire):
     try:
         # Extract engine torque curve
+        driveline_model_time = time.time()
         torque_curves = vehicle['torqueCurves']
         en_speed_curve = [float(curve['engineSpeed']) for curve in torque_curves]  # [rpm]
         en_torque_curve = [float(curve['torque']) for curve in torque_curves]  # [N*m]
@@ -159,9 +170,7 @@ def calculate_driveline_model(vehicle, transmission, tire):
         n_final = float(transmission['finalGearEfficiency'])
         tire_radius = float(tire['tireRadius'])  # [m]
 
-        return {
-            "message": "Driveline model generated successfully.",
-        }
+        
 
         # Number of gears
         nog = len(ratio_gearbox)
@@ -181,21 +190,25 @@ def calculate_driveline_model(vehicle, transmission, tire):
             vehicle_speed_gear.append(vehicle_speed)
             wheel_torque_gear.append(wheel_torque)
 
+        driveline_model_time = time.time() - driveline_model_time
+        
+
         # Minimum and maximum vehicle speeds
         v_min = min(min(v) for v in vehicle_speed_gear)
         v_max = max(max(v) for v in vehicle_speed_gear)
 
-        # New speed vector for fine meshing
-        dv = 0.5 / 3.6  # [m/s]
+        
+        # New speed vector for coarser meshing
+        dv = 7.2 / 3.6  # [m/s]
         vehicle_speed = [v_min + i * dv for i in range(int((v_max - v_min) / dv) + 1)]
+        
 
         # Memory preallocation for gear and tractive force
         gear = []
         fx_engine = []
 
-        return {
-            "message": "Driveline model generated successfully.",
-        }
+        
+
 
         # Optimizing gear selection and calculating tractive force
         for v in vehicle_speed:

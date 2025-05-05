@@ -12,7 +12,8 @@ export const simulateFunctionHandler = defineFunction(
 		new Function(scope, "simulate", {
 				handler: "index.handler",
 				runtime: Runtime.PYTHON_3_10, // or any other python version
-				timeout: Duration.seconds(40), //  default is 3 seconds
+				timeout: Duration.seconds(60), //  default is 3 seconds
+				memorySize: 3000, // default is 128 MB
 				code: Code.fromAsset(functionDir, {
 						bundling: {
 								image: DockerImage.fromRegistry("dummy"), // replace with desired image from AWS ECR Public Gallery
