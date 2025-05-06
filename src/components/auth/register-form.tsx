@@ -145,7 +145,7 @@ export default function RegisterForm({
           endContent={
             <button
               aria-label="toggle password visibility"
-              className="focus:outline-none"
+              tabIndex={-1}
               type="button"
               onClick={() => toggleShow("password")}
             >
@@ -177,7 +177,7 @@ export default function RegisterForm({
           endContent={
             <button
               aria-label="toggle password visibility"
-              className="focus:outline-none"
+              tabIndex={-1}
               type="button"
               onClick={() => toggleShow("confirm")}
             >

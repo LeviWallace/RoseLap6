@@ -6,6 +6,7 @@ import time
 import math
 from scipy.interpolate import interp1d
 from datetime import datetime, timezone
+from decimal import Decimal
 
 dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
 
@@ -19,11 +20,6 @@ engine_table = dynamodb.Table("Engine-nxbm7lb2srcidguvzbwydc5jqi-NONE")
 tire_table = dynamodb.Table("Tire-nxbm7lb2srcidguvzbwydc5jqi-NONE")
 
 simulation_table = dynamodb.Table("Simulation-nxbm7lb2srcidguvzbwydc5jqi-NONE")
-
-handler_time = None
-brake_modal_time = None
-steering_model_time = None
-driveline_model_time = None
 
 
 def load_table(table, id):
@@ -41,10 +37,20 @@ def load_table(table, id):
         }
 
 def handler(event, context):
-    handler_time = time.time()
+    fetch_time = time.time()
 
-    vehicle_id = event['arguments']['vehicleId']
-    track_id = event['arguments']['trackId']
+    simulation_id = event['arguments']['id']
+
+    simulation = load_table(simulation_table, simulation_id)
+    if not simulation:
+        return {
+            "statusCode": 404,
+            "error": "Cannot load simulation",
+            "body": json.dumps({"simulation": simulation})
+        }
+    
+    vehicle_id = simulation['vehicle']
+    track_id = simulation['track']
 
     vehicle = load_table(vehicle_table, vehicle_id)
     track = load_table(track_table, track_id)
@@ -53,10 +59,7 @@ def handler(event, context):
         return {
             "statusCode": 404,
             "error": "Cannot load either vehicle or track",
-            "body": json.dumps({
-                 "vehicle": vehicle,
-                 "track": track
-            })
+            "body": json.dumps(simulation)
         }
     
     transmission_id = vehicle['transmissionId']
@@ -89,52 +92,100 @@ def handler(event, context):
             })
         }
 
-    handler_time = time.time() - handler_time
-    simulation_props = calculate_vehicle_model(vehicle, brakes, tire, transmission, aerodynamics, engine)
+    fetch_time = time.time() - fetch_time
 
-    item = {
-        'id': uuid.uuid4().hex,
-        'vehicle': vehicle_id,
-        'track': track_id,
-        'completed': False,
-        'updatedAt': datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z'),
-        'createdAt': datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z')
-    }
-    
-    simulation_table.put_item(
-        Item=item
+    calculation_time = time.time()
+    simulation_props = calculate_vehicle_model(vehicle, brakes, tire, transmission, aerodynamics, engine)
+    calculation_time = time.time() - calculation_time
+
+    simulation_table.update_item(
+        Key={
+            'id': simulation_id
+        },
+        UpdateExpression="SET tFetchTime = :tFetchTime, tBrakeModel = :tBrakeModel, tSteeringModel = :tSteeringModel, tDrivelineModel = :tDrivelineModel, tShiftingModel = :tShiftingModel, tForceModel = :tForceModel, tGGVMapModel = :tGGVMapModel, tSimulationTime = :tSimulationTime, completed = :completed",
+        ExpressionAttributeValues={
+            ":tFetchTime": Decimal(str(fetch_time)),
+            ":tBrakeModel": Decimal(str(simulation_props["tBrakeModel"])),
+            ":tSteeringModel": Decimal(str(simulation_props["tSteeringModel"])),
+            ":tDrivelineModel": Decimal(str(simulation_props["tDrivelineModel"])),
+            ":tShiftingModel": Decimal(str(simulation_props["tShiftingModel"])),
+            ":tForceModel": Decimal(str(simulation_props["tForceModel"])),
+            ":tGGVMapModel": Decimal(str(simulation_props["tGGVMapModel"])),
+            ":tSimulationTime": Decimal(str(calculation_time)),
+            ":completed": True
+        }
     )
 
-    return {
-        "message": {
-            "success": 1,
-        }
-    }
+    return json.dumps({
+        "statusCode": 200,
+        "message": "Simulation completed successfully",
+    })
 
 
 ### VEHICLE
 def calculate_vehicle_model(vehicle, brakes, tire, transmission, aerodynamics, engine):
-    br_disc_d = float(brakes['discOuterDiameter'])
-    br_pad_h = float(brakes['padHeight'])
+    
+    # Extract vehicle parameters
+    M = float(vehicle['mass'])  # Vehicle mass [kg]
+    df = float(vehicle['frontMassDistribution'])  # Front axle weight distribution [-]
+    torque_curves = vehicle['torqueCurves']
+    en_speed_curve = np.array([float(curve['engineSpeed']) for curve in torque_curves])  # [rpm]
+    en_torque_curve = np.array([float(curve['torque']) for curve in torque_curves])  # [N*m]
+
+    # Brakes
+    br_disc_d = float(brakes['discOuterDiameter'])/1000
+    br_pad_h = float(brakes['padHeight'])/1000
     br_pad_mu = float(brakes['padFrictionCoefficient'])
     br_nop = float(brakes['caliperNumberOfPistons'])
     br_pist_d = float(brakes['caliperPistonDiameter'])
     br_mast_d = float(brakes['masterCylinderPistonDiameter'])
     br_ped_r = float(brakes['pedalRatio'])
 
-    tire_radius = float(tire['tireRadius'])
 
-    # Calculate brake parameters
+    # Transmission
+    drive = transmission['driveType']
+    ratio_primary = float(transmission['primaryGearReduction'])
+    ratio_final = float(transmission['finalGearReduction'])
+    ratio_gearbox = np.array([float(ratio) for ratio in transmission['gearRatios']])
+    n_primary = float(transmission['primaryGearEfficiency'])
+    n_gearbox = float(transmission['gearboxEfficiency'])
+    n_final = float(transmission['finalGearEfficiency'])
+    
+
+    # Aerodynamics
+    Cl = float(aerodynamics['liftCoefficientCL'])
+    Cd = float(aerodynamics['dragCoefficientCD'])
+    factor_Cl = float(aerodynamics['clScaleMultiplier'])
+    factor_Cd = float(aerodynamics['cdScaleMultiplier'])  # Lift coefficient [-]
+    da = float(aerodynamics['frontAeroDistribution'])/100  # Front area [m^2]
+    A = float(aerodynamics['frontalArea'])  # Frontal area [m^2]
+    rho = float(aerodynamics['airDensity'])  # Air density [kg/m^3]
+
+    # Tire
+    L = float(tire['wheelBase'])    # Wheelbase [m]
+    factor_grip = float(tire['gripFactorMultiplier'])  # Grip factor [-]
+    tire_radius = float(tire['tireRadius'])/1000
+    mu_x = float(tire['longitudinalFrictionCoefficient'])  # Longitudinal friction coefficient [-]
+    mu_x_M = float(tire['longitudinalFrictionLoadRating'])  # Max longitudinal friction coefficient [-]
+    sens_x = float(tire['longitudinalFrictionSensitivity'])  # Longitudinal sensitivity [N/deg]
+    mu_y = float(tire['lateralFrictionCoefficient'])  # Lateral friction coefficient [-]
+    mu_y_M = float(tire['lateralFrictionLoadRating'])  # Max lateral friction coefficient [-]
+    sens_y = float(tire['lateralFrictionSensitivity'])  # Lateral sensitivity [N/deg]
+    CF = float(tire['frontCorneringStiffness'])  # Front cornering stiffness [N/deg]
+    CR = float(tire['rearCorneringStiffness'])  # Rear cornering stiffness [N/deg]
+
+    ## %% Braking Model
+    brake_time = time.time()
+    
     br_pist_a = br_nop * math.pi * (br_pist_d / 1000) ** 2 / 4  # [m^2]
     br_mast_a = math.pi * (br_mast_d / 1000) ** 2 / 4  # [m^2]
     beta = tire_radius / (br_disc_d / 2 - br_pad_h / 2) / br_pist_a / br_pad_mu / 4  # [Pa/N] per wheel
     phi = br_mast_a / br_ped_r * 2  # [-] for both systems
 
-    # Extract steering parameters
-    CF = float(tire['frontCorneringStiffness'])  # Front cornering stiffness [N/deg]
-    CR = float(tire['rearCorneringStiffness'])  # Rear cornering stiffness [N/deg]
-    df = float(vehicle['frontMassDistribution'])  # Front axle weight distribution [-]
-    L = float(tire['wheelBase'])    # Wheelbase [m]
+    brake_time = time.time() - brake_time
+
+    ## %% Steering Model
+    steering_time = time.time()
 
     # Calculate distances from center of mass
     a = (1 - df) * L  # Distance of front axle from center of mass [mm]
@@ -142,202 +193,224 @@ def calculate_vehicle_model(vehicle, brakes, tire, transmission, aerodynamics, e
 
     # Calculate steering model matrix
     C = 2 * [[CF, CF + CR], [CF * a, CF * a + CR * b]]
-
-    # Return the steering model matrix
     
 
-    # Extract engine torque curve
-    driveline_model_time = time.time()
-    torque_curves = vehicle['torqueCurves']
-    en_speed_curve = [float(curve['engineSpeed']) for curve in torque_curves]  # [rpm]
-    en_torque_curve = [float(curve['torque']) for curve in torque_curves]  # [N*m]
+    steering_time = time.time() - steering_time
+    ## %% Driveline Model
+    driveline_time = time.time()
 
-    # Calculate engine power curve
-    en_power_curve = [torque * speed * 2 * math.pi / 60 for torque, speed in zip(en_torque_curve, en_speed_curve)]  # [W]
-
-    # Extract transmission and tire parameters
-    required_keys = ['primaryGearReduction', 'finalGearReduction', 'gearRatios', 
-                        'primaryGearEfficiency', 'gearboxEfficiency', 'finalGearEfficiency']
-    for key in required_keys:
-        if key not in transmission:
-            raise ValueError(f"Missing required transmission parameter: {key}")
-
-    ratio_primary = float(transmission['primaryGearReduction'])
-    ratio_final = float(transmission['finalGearReduction'])
-    ratio_gearbox = [float(ratio) for ratio in transmission['gearRatios']]  # Gear ratios
-    n_primary = float(transmission['primaryGearEfficiency'])
-    n_gearbox = float(transmission['gearboxEfficiency'])
-    n_final = float(transmission['finalGearEfficiency'])
-    tire_radius = float(tire['tireRadius'])  # [m]
-
+    en_power_curve = [(torque * speed * 2 * math.pi / 60) for torque, speed in zip(en_torque_curve, en_speed_curve)]  # [W]
 
     # Number of gears
     nog = len(ratio_gearbox)
 
     # Memory preallocation
-    wheel_speed_gear = []
-    vehicle_speed_gear = []
-    wheel_torque_gear = []
+    wheel_speed_gear = np.zeros((nog, len(en_speed_curve)))
+    vehicle_speed_gear = np.zeros((nog, len(en_speed_curve)))
+    wheel_torque_gear = np.zeros((nog, len(en_speed_curve)))
 
     # Calculate values for each gear and engine speed
     for i in range(nog):
-        wheel_speed = [speed / ratio_primary / ratio_gearbox[i] / ratio_final for speed in en_speed_curve]
-        vehicle_speed = [ws * 2 * math.pi / 60 * tire_radius for ws in wheel_speed]
-        wheel_torque = [torque * ratio_primary * ratio_gearbox[i] * ratio_final * n_primary * n_gearbox * n_final for torque in en_torque_curve]
+        wheel_speed = en_speed_curve / ratio_primary / ratio_gearbox[i] / ratio_final
+        vehicle_speed = wheel_speed * 2 * math.pi / 60 * tire_radius  # in m/s
+        wheel_torque = en_torque_curve * ratio_primary * ratio_gearbox[i] * ratio_final * n_primary * n_gearbox * n_final
 
-        wheel_speed_gear.append(wheel_speed)
-        vehicle_speed_gear.append(vehicle_speed)
-        wheel_torque_gear.append(wheel_torque)
-
-    driveline_model_time = time.time() - driveline_model_time
-
+        # Store results
+        wheel_speed_gear[i, :] = wheel_speed
+        vehicle_speed_gear[i, :] = vehicle_speed
+        wheel_torque_gear[i, :] = wheel_torque
+    
     # Minimum and maximum vehicle speeds
     v_min = min(min(v) for v in vehicle_speed_gear)
     v_max = max(max(v) for v in vehicle_speed_gear)
 
     # New speed vector for coarser meshing
     dv = 5 * (7.2 / 3.6)  # [m/s]
-    vehicle_speed = [v_min + i * dv for i in range(int((v_max - v_min) / dv) + 1)]
+    vehicle_speed = np.linspace(v_min, v_max, int((v_max - v_min) / dv) + 1)
+    n_points = len(vehicle_speed)
 
     # Memory preallocation for gear and tractive force
-    gear = []
-    fx_engine = []
+    gear = np.zeros(n_points, dtype=int)
+    fx_engine = np.zeros(n_points)
+    fx = np.zeros((n_points, nog))
 
-    # Optimizing gear selection and calculating tractive force
-    for v in vehicle_speed:
-        fx = [interp1d(vg, [wt / tire_radius for wt in wtg], fill_value=0, bounds_error=False)(v) for vg, wtg in zip(vehicle_speed_gear, wheel_torque_gear)]
-        max_fx = max(fx)
-        selected_gear = fx.index(max_fx) + 1  # Gear index starts from 1
-        fx_engine.append(max_fx)
-        gear.append(selected_gear)
+    # Precompute interpolators for each gear
+    interpolators = [
+        interp1d(vehicle_speed_gear[i], wheel_torque_gear[i] / tire_radius, 
+                kind='linear', fill_value=0, bounds_error=False)
+        for i in range(nog)
+    ]
+
+    # Compute tractive force and select optimal gear
+    for i in range(n_points):
+        v = vehicle_speed[i]
+        fx_i = [interp(v) for interp in interpolators]
+        fx[i, :] = fx_i
+        fx_engine[i] = np.max(fx_i)
+        gear[i] = np.argmax(fx_i)
 
     # Adding values for 0 speed to vectors for interpolation purposes at low speeds
-    vehicle_speed.insert(0, 0)
-    gear.insert(0, gear[0])
-    fx_engine.insert(0, fx_engine[0])
+    vehicle_speed = np.insert(vehicle_speed, 0, 0)
+    gear = np.insert(gear, 0, gear[0])  # Repeat first gear
+    fx_engine = np.insert(fx_engine, 0, fx_engine[0])
 
-    # Final vectors
-    engine_speed = [ratio_final * ratio_gearbox[g - 1] * ratio_primary * v / tire_radius * 60 / (2 * math.pi) for g, v in zip(gear, vehicle_speed)]
-    wheel_torque = [fx * tire_radius for fx in fx_engine]
-    engine_torque = [wt / ratio_final / ratio_gearbox[g - 1] / ratio_primary / n_primary / n_gearbox / n_final for wt, g in zip(wheel_torque, gear)]
-    engine_power = [et * es * 2 * math.pi / 60 for et, es in zip(engine_torque, engine_speed)]
+    # Convert gear indices to corresponding gear ratios
+    gear_ratios = ratio_gearbox[gear]
 
+    # Compute final vectors
+    engine_speed = ratio_final * gear_ratios * ratio_primary * vehicle_speed / tire_radius * 60 / (2 * np.pi)  # RPM
+    wheel_torque = fx_engine * tire_radius
+    engine_torque = wheel_torque / (ratio_final * gear_ratios * ratio_primary * n_primary * n_gearbox * n_final)
+    engine_power = engine_torque * engine_speed * 2 * np.pi / 60  # Watts
+
+    driveline_time = time.time() - driveline_time
     # %% Shifting Points and Rev Drops
+    shifting_time = time.time()
 
-    # Finding gear changes
-    gear_change = np.diff(gear)  # Gear change will appear as 1
-    gear_change = np.concatenate(([0], gear_change)) + np.concatenate((gear_change, [0]))
-    gear_change = gear_change.astype(bool)
+    gear_change = np.diff(gear) != 0
 
-    # Getting engine speed at gear change
-    engine_speed_gear_change = np.array(engine_speed)[gear_change]
+    # Identify indices just before and after a gear change
+    gear_change_indices = np.where(np.concatenate([[False], gear_change]) | np.concatenate([gear_change, [False]]))[0]
 
-    # Getting shift points and arrive points
+    # Get engine speeds at those points
+    engine_speed_gear_change = engine_speed[gear_change_indices]
+
+    # Separate into shift (before) and arrive (after) points
     shift_points = engine_speed_gear_change[::2]
     arrive_points = engine_speed_gear_change[1::2]
 
-    # Calculating rev drops
+    # Calculate rev drops
     rev_drops = shift_points - arrive_points
 
-    # Creating shifting table
-    rownames = [f"{i}-{i+1}" for i in range(1, len(shift_points) + 1)]
-    # TODO: OUTPUT THIS DATAFRAME
-    # shifting_table = pd.DataFrame({
-    #     "Shift Points": shift_points,
-    #     "Arrive Points": arrive_points,
-    #     "Rev Drops": rev_drops
+    # # Create row labels like '1-2', '2-3', ..., 'n-1-n'
+    # rownames = [f"{i}-{i+1}" for i in range(1, len(shift_points)+1)]
+
+    # # Create a pandas table
+    # shifting = pd.DataFrame({
+    #     "shift_points": shift_points,
+    #     "arrive_points": arrive_points,
+    #     "rev_drops": rev_drops
     # }, index=rownames)
 
-    return {
-        "message": {
-            "rownames": rownames,
-            "shift_points": shift_points.tolist(),
-            "arrive_points": arrive_points.tolist(),
-            "rev_drops": rev_drops.tolist(),
-            "vehicle_speed": vehicle_speed,
-        }
-    }
+    # HUD
+    # return {
+    #     "shift_points": shift_points.tolist(),
+    #     "arrive_points": arrive_points.tolist(),
+    #     "rev_drops": rev_drops.tolist(),
+    #     "vehicle_speed": vehicle_speed.tolist(),
+    # }
+    
+    shifting_time = time.time() - shifting_time
+    # %% Force Model
 
-    # Add the following code:
-    # # %% GGV Map
-    # # Constants
-    # g = 9.81  # Gravity [m/s^2]
-    # rho = 1.225  # Air density [kg/m^3]
-    # factor_grip = 1.0  # Grip factor
-    # factor_Cl = 1.0  # Lift coefficient factor
-    # factor_Cd = 1.0  # Drag coefficient factor
-    # factor_power = 1.0  # Power factor
-    # factor_drive = 0.5  # Drive factor
-    # factor_aero = 0.5  # Aero factor
-    # driven_wheels = 2  # Number of driven wheels
+    force_time = time.time()
+    g = 9.81
 
-    # # Extract track and vehicle parameters
-    # M = float(vehicle['mass'])  # Vehicle mass [kg]
-    # A = float(aerodynamics['frontalArea'])  # Frontal area [m^2]
-    # Cl = float(aerodynamics['liftCoefficient'])  # Lift coefficient
-    # Cd = float(aerodynamics['dragCoefficient'])  # Drag coefficient
-    # Cr = float(aerodynamics['rollingResistanceCoefficient'])  # Rolling resistance coefficient
-    # mu_x = float(tire['longitudinalFrictionCoefficient'])  # Longitudinal friction coefficient
-    # mu_y = float(tire['lateralFrictionCoefficient'])  # Lateral friction coefficient
-    # sens_x = float(tire['longitudinalSensitivity'])  # Longitudinal sensitivity
-    # sens_y = float(tire['lateralSensitivity'])  # Lateral sensitivity
+    factor_drive = 1
+    factor_aero = 1
+    driven_wheels = 4
 
-    # # Derived parameters
-    # dmx = factor_grip * sens_x
-    # dmy = factor_grip * sens_y
-    # mux = factor_grip * mu_x
-    # muy = factor_grip * mu_y
-    # Ny = mu_y * M * g
-    # Nx = mu_x * M * g
-    # Wz = M * g  # Normal load on all wheels [N]
+    if drive == "RearWheelDrive":
+        factor_drive = (1 - df)
+        factor_aero = (1 - da)
+        driven_wheels = 2
+    elif drive == "FrontWheelDrive":
+        factor_drive = df
+        factor_aero = da
+        driven_wheels = 2
 
-    # # Speed map vector
-    # dv = 2  # Speed step [m/s]
-    # v = np.arange(0, v_max + dv, dv)  # Speed vector [m/s]
+    # z-axis forces
+    fz_mass = -M * g
+    fz_aero = 0.5 * rho * factor_Cl * Cl * A * vehicle_speed**2
+    fz_total = fz_mass + fz_aero
+    fz_tyre = (factor_drive * fz_mass + factor_aero * fz_aero) / driven_wheels
 
-    # # Friction ellipse points
-    # N = 45  # Number of points
+    # x-axis forces
+    fx_aero = 0.5 * rho * factor_Cd * Cd * A * vehicle_speed**2
+    fx_roll = CR * abs(fz_total)
+    fx_tyre = driven_wheels * (mu_x + sens_x * (mu_x_M * g - abs(fz_tyre))) * abs(fz_tyre)
 
-    # # Map preallocation
-    # GGV = np.zeros((len(v), 2 * N - 1, 3))
+    force_time = time.time() - force_time
+    # % GGV Map
+    ggv_time = time.time()
 
-    # for i, speed in enumerate(v):
-    #     # Aero forces
-    #     Aero_Df = 0.5 * rho * factor_Cl * Cl * A * speed**2  # Downforce [N]
-    #     Aero_Dr = 0.5 * rho * factor_Cd * Cd * A * speed**2  # Drag force [N]
+    # Track data
+    bank = 0  # Bank angle [degrees]
+    incl = 0  # Inclination angle [degrees]
 
-    #     # Rolling resistance
-    #     Roll_Dr = Cr * abs(-Aero_Df + Wz)  # Rolling drag [N]
+    # Lateral tire coefficients
+    dmy = factor_grip * sens_y
+    muy = factor_grip * mu_y
+    Ny = mu_y_M * g
 
-    #     # Normal load on driven wheels
-    #     Wd = (factor_drive * Wz + (-factor_aero * Aero_Df)) / driven_wheels
+    # Longitudinal tire coefficients
+    dmx = factor_grip * sens_x
+    mux = factor_grip * mu_x
+    Nx = mu_x_M * g
 
-    #     # Drag acceleration
-    #     ax_drag = (Aero_Dr + Roll_Dr) / M
+    # Normal load on all wheels
+    Wz = M * g * math.cos(bank) * math.cos(incl)
 
-    #     # Maximum lateral acceleration available from tires
-    #     ay_max = (1 / M) * (muy + dmy * (Ny - (Wz - Aero_Df) / 4)) * (Wz - Aero_Df)
+    # Induced weight from banking and inclination
+    Wy = -M * g * math.sin(bank)
+    Wx = M * g * math.sin(incl)
 
-    #     # Maximum longitudinal acceleration available from tires
-    #     ax_tyre_max_acc = (1 / M) * (mux + dmx * (Nx - Wd)) * Wd * driven_wheels
-    #     ax_tyre_max_dec = -(1 / M) * (mux + dmx * (Nx - (Wz - Aero_Df) / 4)) * (Wz - Aero_Df)
+    # Speed map vector
+    dv = 2  # Speed increment [m/s]
+    v = np.arange(0, v_max + dv, dv)
+    if v[-1] != v_max:
+        v = np.append(v, v_max)
 
-    #     # Power limit from engine
-    #     ax_power_limit = (1 / M) * interp1d(vehicle_speed, factor_power * fx_engine, fill_value=0, bounds_error=False)(speed)
-    #     ax_power_limit = np.full(N, ax_power_limit)
+    N = 45
+    # Initialize GGV map as a numpy array
+    GGV = np.zeros((len(v), 2 * N - 1, 3))
+    for i in range(len(v)):
+        # Aero forces
+        Aero_Df = 0.5 * rho * factor_Cl * Cl * A * v[i] ** 2
+        Aero_Dr = 0.5 * rho * factor_Cd * Cd * A * v[i] ** 2
 
-    #     # Lateral acceleration vector
-    #     ay = ay_max * np.cos(np.linspace(0, np.pi, N))
+        # Rolling resistance
+        Roll_Dr = CR * abs(-Aero_Df + Wz)
 
-    #     # Longitudinal acceleration vectors
-    #     ax_tyre_acc = ax_tyre_max_acc * np.sqrt(1 - (ay / ay_max) ** 2)  # Friction ellipse
-    #     ax_acc = np.minimum(ax_tyre_acc, ax_power_limit) + ax_drag  # Limited by engine power
-    #     ax_dec = ax_tyre_max_dec * np.sqrt(1 - (ay / ay_max) ** 2) + ax_drag  # Friction ellipse
+        # Normal load on driven wheels
+        Wd = (factor_drive * Wz + (-factor_aero * Aero_Df)) / driven_wheels
 
-    #     # Saving GGV map
-    #     GGV[i, :, 0] = np.concatenate((ax_acc, ax_dec[1:]))
-    #     GGV[i, :, 1] = np.concatenate((ay, -ay[1:]))
-    #     GGV[i, :, 2] = speed * np.ones(2 * N - 1)
+        # Drag acceleration
+        ax_drag = (Aero_Dr + Roll_Dr + Wx) / M
 
+        # Maximum lateral acceleration available from tires
+        ay_max = (1 / M) * (muy + dmy * (Ny - (Wz - Aero_Df) / 4)) * (Wz - Aero_Df)
+
+        # Maximum longitudinal acceleration available from tires
+        ax_tyre_max_acc = (1 / M) * (mux + dmx * (Nx - Wd)) * Wd * driven_wheels
+
+        # Maximum longitudinal deceleration available from tires
+        ax_tyre_max_dec = -(1 / M) * (mux + dmx * (Nx - (Wz - Aero_Df) / 4)) * (Wz - Aero_Df)
+
+        # Getting power limit from engine
+        ax_power_limit = (1 / M) * np.interp(v[i], vehicle_speed, factor_drive * fx_engine)
+        ax_power_limit = np.full(N, ax_power_limit)
+
+        # Lateral acceleration vector
+        ay = ay_max * np.cos(np.radians(np.linspace(0, 180, N)))
+
+        # Longitudinal acceleration vector
+        ax_tyre_acc = ax_tyre_max_acc * np.sqrt(1 - (ay / ay_max) ** 2)  # Friction ellipse
+        ax_acc = np.minimum(ax_tyre_acc, ax_power_limit) + ax_drag  # Limiting by engine power
+        ax_dec = ax_tyre_max_dec * np.sqrt(1 - (ay / ay_max) ** 2) + ax_drag  # Friction ellipse
+
+        # Saving GGV map
+        GGV[i, :, 0] = np.concatenate([ax_acc, ax_dec[1:][::-1]])
+        GGV[i, :, 1] = np.concatenate([ay, ay[1:][::-1]])
+        GGV[i, :, 2] = v[i] * np.ones(2 * N - 1)
     # # HUD
     # print("GGV map generated successfully.")
+    ggv_time = time.time() - ggv_time
+    return {
+        "tBrakeModel": brake_time,
+        "tSteeringModel": steering_time,
+        "tDrivelineModel": driveline_time,
+        "tShiftingModel": shifting_time,
+        "tForceModel": force_time,
+        "tGGVMapModel": ggv_time,
+    }

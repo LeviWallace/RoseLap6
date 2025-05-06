@@ -134,13 +134,21 @@ const schema = a.schema({
 		vehicle: a.id().required(),
 		track: a.id().required(),
 		completed: a.boolean().default(false),
+
+		tFetchTime: a.float().default(0),
+		tBrakeModel: a.float().default(0),
+		tSteeringModel: a.float().default(0),
+		tDrivelineModel: a.float().default(0),
+		tShitingModel: a.float().default(0),
+		tForceModel: a.float().default(0),
+		tGGVMapModel: a.float().default(0),
+		tSimulationTime: a.float().default(0)
 	}).authorization((allow) => [allow.publicApiKey()]),
 
 	simulate: a
 	.query()
 	.arguments({
-		vehicleId: a.id(),
-		trackId: a.id(),
+		id: a.id(),
 	})
 	.returns(a.string())
 	.handler(a.handler.function(simulateFunctionHandler))

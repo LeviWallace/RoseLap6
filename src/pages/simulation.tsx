@@ -17,22 +17,47 @@ export default function SimulationPage() {
   const id = params.get("id") || "Error: No ID found";
   const [simulation, setSimulation] = useState<Simulation | null>(null);
 
-  async function handleGenerateSimulation() {
+  async function handleGetSimulation() {
     const { data, errors } = await client.models.Simulation.get({ id });
 
-    if (errors) {
+    if (errors || !data) {
       console.error(errors);
-
       return;
     }
-    const simulationData = data as Simulation;
 
-    setSimulation(simulationData);
-    console.log(data, simulationData);
+    if (!data.completed) {
+      handleSimulate(data.id)
+
+      const { data: newData, errors: newErrors } = await client.models.Simulation.get({ id });
+      
+      if (newErrors || !newData) {
+        console.error(newErrors);
+        return;
+      }
+
+      const simulationData = newData as Simulation;
+      setSimulation(simulationData);
+    } else {
+      const simulationData = data as Simulation;
+      setSimulation(simulationData);
+    }
+
+    console.log(simulation);
+  }
+
+  async function handleSimulate(id: string) {
+    client.queries.simulate({
+      id: id
+    }).then((response) => {
+      console.log("Simulation started", response);
+    }).catch((error) => {
+      console.error("Error starting simulation", error);
+    });
+
   }
 
   useEffect(() => {
-    handleGenerateSimulation();
+    handleGetSimulation();
   }, []);
 
   return (
@@ -69,13 +94,15 @@ export default function SimulationPage() {
               Simulation Dashboard
             </h1>
             <div className="flex flex-row space-x-4 items-center">
-              <a className="text-black">Date Time</a>
+              <a className="text-black">{simulation?.createdAt}</a>
               <Button className="bg-black text-white">Download</Button>
             </div>
           </div>
           <div className="mt-5 h-full">
-            {!(simulation && simulation.completed) ? (
+            {(simulation && simulation.completed) ? (
               <Tabs
+                defaultSelectedKey="benchmarking"
+                disabledKeys={["track", "vehicle"]}
                 aria-label="Options"
                 className="w-full"
                 classNames={{
@@ -83,7 +110,7 @@ export default function SimulationPage() {
                     "text-black group-data-[selected=true]:text-white",
                   tabList: "bg-gray-100",
                 }}
-                defaultValue="photos"
+                
               >
                 <Tab key="vehicle" title="Vehicle">
                   <div className="flex flex-row justify-between items-center mt-5">
@@ -188,16 +215,49 @@ export default function SimulationPage() {
                     </Card>
                   </div>
                 </Tab>
-                <Tab key="music" title="Music">
-                  <div />
+                <Tab key="track" title="Track">
+                  <div>
+
+                  </div>
                 </Tab>
-                <Tab key="videos" title="Videos">
-                  <div />
+                <Tab key="benchmarking" title="Benchmarking">
+                  <div className="grid grid-cols-5 gap-4 justify-between items-center mt-5">
+                    {[
+                      { label: "Database Fetch Time", value: simulation.tFetchTime, description: "Time taken to fetch data from the database" },
+                      { label: "Brake Model Time", value: simulation.tBrakeModel, description: "Time taken for brake model calculations" },
+                      { label: "Steering Model Time", value: simulation.tSteeringModel, description: "Time taken for steering model calculations" },
+                      { label: "Driveline Model Time", value: simulation.tDrivelineModel, description: "Time taken for driveline model calculations" },
+                      { label: "Shifting Model Time", value: simulation.tShitingModel, description: "Time taken for shifting model calculations" },
+                      { label: "Force Model Time", value: simulation.tForceModel, description: "Time taken for force model calculations" },
+                      { label: "GGV Map Model Time", value: simulation.tGGVMapModel, description: "Time taken for GGV map model calculations" },
+                      { label: "Simulation Time", value: simulation.tSimulationTime, description: "Total simulation time" },
+                    ].map((item, index) => (
+                      <Card key={index} className="bg-white">
+                      <CardHeader className="pb-2">
+                        <h1 className="font-semibold text-black px-3 pt-2">
+                        {item.label}
+                        </h1>
+                      </CardHeader>
+                      <CardBody className="pb-0 pt-0">
+                        <h1 className="text-2xl font-bold text-black px-3">
+                        {item.value?.toFixed(4)} ms
+                        </h1>
+                      </CardBody>
+                      <CardFooter className="pb-5 pt-1">
+                        <h1 className="font-thin text-sm text-black px-3">
+                        {item.description}
+                        </h1>
+                      </CardFooter>
+                      </Card>
+                    ))}
+
+                  </div>
                 </Tab>
               </Tabs>
             ) : (
               <div className="flex flex-col justify-center items-center h-fit">
                 <CircularProgress
+                  aria-label="Loading"
                   classNames={{
                     svg: "w-36 h-36 drop-shadow-md",
                     indicator: "stroke-black",
