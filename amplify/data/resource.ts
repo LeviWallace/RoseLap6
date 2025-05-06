@@ -133,8 +133,7 @@ const schema = a.schema({
 	.model({
 		vehicle: a.id().required(),
 		track: a.id().required(),
-		startTime: a.date(),
-		endTime: a.date(),
+		completed: a.boolean().default(false),
 	}).authorization((allow) => [allow.publicApiKey()]),
 
 	simulate: a

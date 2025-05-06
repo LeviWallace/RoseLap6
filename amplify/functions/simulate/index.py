@@ -5,6 +5,7 @@ import numpy as np
 import time
 import math
 from scipy.interpolate import interp1d
+from datetime import datetime, timezone
 
 dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
 
@@ -94,8 +95,11 @@ def handler(event, context):
     item = {
         'id': uuid.uuid4().hex,
         'vehicle': vehicle_id,
-        'track': track_id
-    }    
+        'track': track_id,
+        'completed': False,
+        'updatedAt': datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z'),
+        'createdAt': datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z')
+    }
     
     simulation_table.put_item(
         Item=item

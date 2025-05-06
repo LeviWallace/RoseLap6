@@ -18,6 +18,7 @@ module.exports = {
         secondary: "#C87474",
         radius: "0",
         danger: "#FF0000",
+        black: "#000000",
       }
     },
     dark: {
@@ -28,6 +29,7 @@ module.exports = {
         secondary: "#C87474",
         radius: "0",
         danger: "#FF0000",
+        black: "#000000",
       }
     },
     extend: {
@@ -42,6 +44,7 @@ module.exports = {
         secondary: "#C87474",
         radius: "0",
         danger: "#FF0000",
+        black: "#000000",
       }
     },
   },
