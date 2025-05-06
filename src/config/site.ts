@@ -25,10 +25,10 @@ export const siteConfig = {
       label: "Dashboard",
       href: "/landing",
     },
-	{ 
-	  label: "Simulate",
-	  href: "/simulate",
-	},
+    {
+      label: "Simulate",
+      href: "/simulate",
+    },
     {
       label: "History",
       href: "/history",
@@ -64,15 +64,15 @@ export const siteConfig = {
     {
       label: "Facebook",
       href: "https://www.facebook.com/RoseGPE",
-   },
-   {
+    },
+    {
       label: "LinkedIn",
       href: "https://www.linkedin.com/company/rosegpe/",
-   },
+    },
     {
       label: "LinkTree",
       href: "https://linktr.ee/rosegpeofficial",
-   },
+    },
   ],
   help: [
     {

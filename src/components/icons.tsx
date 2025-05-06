@@ -1,6 +1,7 @@
 import { IconSvgProps } from "@/types";
 
-export const EyeSlashFilledIcon = ({size = 24,
+export const EyeSlashFilledIcon = ({
+  size = 24,
   width,
   height,
   ...props
@@ -68,8 +69,6 @@ export const EyeFilledIcon = ({
     </svg>
   );
 };
-
-
 
 export const MoonFilledIcon = ({
   size = 24,

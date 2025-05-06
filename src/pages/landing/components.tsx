@@ -1,25 +1,35 @@
-import DefaultLayout from "@/layouts/default";
 // import ComponentsContainer from "@/components/components/components-container";
-import { generateClient } from 'aws-amplify/data';
-import { type Schema } from '@/../amplify/data/resource';
+import { generateClient } from "aws-amplify/data";
 import { useEffect, useState } from "react";
 import { Button } from "@heroui/button";
 import { Input } from "@heroui/input";
 import { useDisclosure } from "@heroui/modal";
+import {
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownTrigger,
+} from "@heroui/dropdown";
+
 import ComponentAddModal from "@/components/components/component-add-modal";
 import ComponentContainer from "@/components/components/component-container";
-import { Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from "@heroui/dropdown";
-
+import { type Schema } from "@/../amplify/data/resource";
+import DefaultLayout from "@/layouts/default";
 
 const client = generateClient<Schema>();
 
-type BrakeComponent = Schema['Brakes']['type'];
-type EngineComponent = Schema['Engine']['type'];
-type TireComponent = Schema['Tire']['type'];
-type TransmissionComponent = Schema['Transmission']['type'];
-type AerodynamicsComponent = Schema['Aerodynamics']['type'];
+type BrakeComponent = Schema["Brakes"]["type"];
+type EngineComponent = Schema["Engine"]["type"];
+type TireComponent = Schema["Tire"]["type"];
+type TransmissionComponent = Schema["Transmission"]["type"];
+type AerodynamicsComponent = Schema["Aerodynamics"]["type"];
 
-type Component = BrakeComponent | EngineComponent | TireComponent | TransmissionComponent | AerodynamicsComponent;
+type Component =
+  | BrakeComponent
+  | EngineComponent
+  | TireComponent
+  | TransmissionComponent
+  | AerodynamicsComponent;
 
 /**
  *  Component is responsible for displaying and managing a list of componentss.
@@ -34,175 +44,220 @@ type Component = BrakeComponent | EngineComponent | TireComponent | Transmission
  * @returns {JSX.Element} The rendered component.
  */
 export default function ComponentsPage() {
-    const [componentData, setComponentData] = useState({
-        components: [] as Component[],
-        search: "",
-        selectedComponents: [] as boolean[],
-        type: ""
+  const [componentData, setComponentData] = useState({
+    components: [] as Component[],
+    search: "",
+    selectedComponents: [] as boolean[],
+    type: "",
+  });
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
+  async function handleGetComponents() {
+    const brakes = await fetchBrakes();
+    const engines = await fetchEngines();
+    const tires = await fetchTires();
+    const transmissions = await fetchTransmissions();
+    const aerodynamics = await fetchAerodynamics();
+
+    setComponentData((prevData) => ({
+      ...prevData,
+      components: [
+        ...brakes,
+        ...engines,
+        ...tires,
+        ...transmissions,
+        ...aerodynamics,
+      ],
+    }));
+  }
+
+  async function fetchBrakes(): Promise<Component[]> {
+    const { data, errors } = await client.models.Brakes.list({
+      filter: {
+        name: {
+          contains: componentData.search,
+        },
+      },
     });
-    const { isOpen, onOpen, onClose } = useDisclosure();
 
-    async function handleGetComponents() {
-        const brakes = await fetchBrakes();
-        const engines = await fetchEngines();
-        const tires = await fetchTires();
-        const transmissions = await fetchTransmissions();
-        const aerodynamics = await fetchAerodynamics();
+    if (errors) {
+      console.log(errors);
 
-        setComponentData((prevData) => ({
-            ...prevData,
-            components: [...brakes, ...engines, ...tires, ...transmissions, ...aerodynamics],
-        }));
+      return [];
     }
 
-    async function fetchBrakes(): Promise<Component[]> {
-        const { data, errors } = await client.models.Brakes.list({
-            filter: {
-                name: {
-                    contains: componentData.search,
-                },
-            },
-        });
-        if (errors) {
-            console.log(errors);
-            return [];
-        }
-        return data as Component[];
+    return data as Component[];
+  }
+
+  async function fetchEngines(): Promise<Component[]> {
+    const { data, errors } = await client.models.Engine.list({
+      filter: {
+        name: {
+          contains: componentData.search,
+        },
+      },
+    });
+
+    if (errors) {
+      console.log(errors);
+
+      return [];
     }
 
-    async function fetchEngines(): Promise<Component[]> {
-        const { data, errors } = await client.models.Engine.list({
-            filter: {
-                name: {
-                    contains: componentData.search,
-                },
-            },
-        });
-        if (errors) {
-            console.log(errors);
-            return [];
-        }
-        return data as Component[];
+    return data as Component[];
+  }
+
+  async function fetchTires(): Promise<Component[]> {
+    const { data, errors } = await client.models.Tire.list({
+      filter: {
+        name: {
+          contains: componentData.search,
+        },
+      },
+    });
+
+    if (errors) {
+      console.log(errors);
+
+      return [];
     }
 
-    async function fetchTires(): Promise<Component[]> {
-        const { data, errors } = await client.models.Tire.list({
-            filter: {
-                name: {
-                    contains: componentData.search,
-                },
-            },
-        });
-        if (errors) {
-            console.log(errors);
-            return [];
-        }
-        return data as Component[];
+    return data as Component[];
+  }
+
+  async function fetchTransmissions(): Promise<Component[]> {
+    const { data, errors } = await client.models.Transmission.list({
+      filter: {
+        name: {
+          contains: componentData.search,
+        },
+      },
+    });
+
+    if (errors) {
+      console.log(errors);
+
+      return [];
     }
 
-    async function fetchTransmissions(): Promise<Component[]> {
-        const { data, errors } = await client.models.Transmission.list({
-            filter: {
-                name: {
-                    contains: componentData.search,
-                },
-            },
-        });
-        if (errors) {
-            console.log(errors);
-            return [];
-        }
-        return data as Component[];
+    return data as Component[];
+  }
+
+  async function fetchAerodynamics(): Promise<Component[]> {
+    const { data, errors } = await client.models.Aerodynamics.list({
+      filter: {
+        name: {
+          contains: componentData.search,
+        },
+      },
+    });
+
+    if (errors) {
+      console.log(errors);
+
+      return [];
     }
 
-    async function fetchAerodynamics(): Promise<Component[]> {
-        const { data, errors } = await client.models.Aerodynamics.list({
-            filter: {
-                name: {
-                    contains: componentData.search,
-                },
-            },
-        });
-        if (errors) {
-            console.log(errors);
-            return [];
-        }
-        return data as Component[];
-    }
-    
-    useEffect(() => {
-        handleGetComponents();
-    }, [componentData.search, componentData.selectedComponents]);
+    return data as Component[];
+  }
 
-    
-    function handleComponentsAddModal(type: string): void {
-        setComponentData((prevData) => ({ ...prevData, type: type}));
-        onOpen();
-    }
+  useEffect(() => {
+    handleGetComponents();
+  }, [componentData.search, componentData.selectedComponents]);
 
-    function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
-        setComponentData((prevData) => ({ ...prevData, search: e.target.value}));
-    }
+  function handleComponentsAddModal(type: string): void {
+    setComponentData((prevData) => ({ ...prevData, type: type }));
+    onOpen();
+  }
 
-    return (
-        <>
-        <ComponentAddModal isOpen={isOpen} onClose={onClose} updateCallback={handleGetComponents} type={componentData.type}></ComponentAddModal>
-        <DefaultLayout>
-            <div className="grid grid-cols-12"></div>
-                <div className="flex justify-between items-center space-x-2">
-                    <Input
-                        name="component-search"
-						label="Components"
-                        value={componentData.search}
-                        onChange={handleInputChange}
-                        className="my-7 px-4"
-                        placeholder="Search All Components..."
-                        type="text"
-                        variant="underlined"
-                    />
-					<Button
-						onPress={handleGetComponents}
-						variant="bordered"
-						size="lg"
-						className="border-1 rounded-sm border-foreground"
-					>
-						Search
-					</Button>
-                    <Dropdown
-                        showArrow
-                        classNames={{
-                            base: "before:", // change arrow background
-                            content: "border border-white bg-background",
-                        }}>
-                        <DropdownTrigger>
-                            <Button
-								variant="bordered"
-								size="lg"
-								className="border-1 rounded-sm border-foreground">
-                                Add Component
-                            </Button>
-                        </DropdownTrigger>
-                        <DropdownMenu aria-label="Static Actions">
-                            <DropdownItem key={"tire"} onPress={() => handleComponentsAddModal("tire")}>
-                                Tire
-                            </DropdownItem>
-                            <DropdownItem key={"brakes"} onPress={() => handleComponentsAddModal("brakes")}>
-                                Brakes
-                            </DropdownItem>
-                            <DropdownItem key={"aerodynamics"} onPress={() => handleComponentsAddModal("aerodynamics")}>
-                                Aerodynamics
-                            </DropdownItem>
-                            <DropdownItem key={"engine"} onPress={() => handleComponentsAddModal("engine")}>
-                                Engine
-                            </DropdownItem>
-                            <DropdownItem key={"transmission"} onPress={() => handleComponentsAddModal("transmission")}>
-                                Transmission
-                            </DropdownItem>
-                        </DropdownMenu>
-                    </Dropdown>
-                </div>
-                <ComponentContainer components={componentData.components} updateCallback={handleGetComponents}/>
-        </DefaultLayout>
-        </>
-    )
+  function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setComponentData((prevData) => ({ ...prevData, search: e.target.value }));
+  }
+
+  return (
+    <>
+      <ComponentAddModal
+        isOpen={isOpen}
+        type={componentData.type}
+        updateCallback={handleGetComponents}
+        onClose={onClose}
+      />
+      <DefaultLayout>
+        <div className="grid grid-cols-12" />
+        <div className="flex justify-between items-center space-x-2">
+          <Input
+            className="my-7 px-4"
+            label="Components"
+            name="component-search"
+            placeholder="Search All Components..."
+            type="text"
+            value={componentData.search}
+            variant="underlined"
+            onChange={handleInputChange}
+          />
+          <Button
+            className="border-1 rounded-sm border-foreground"
+            size="lg"
+            variant="bordered"
+            onPress={handleGetComponents}
+          >
+            Search
+          </Button>
+          <Dropdown
+            showArrow
+            classNames={{
+              base: "before:", // change arrow background
+              content: "border border-white bg-background",
+            }}
+          >
+            <DropdownTrigger>
+              <Button
+                className="border-1 rounded-sm border-foreground"
+                size="lg"
+                variant="bordered"
+              >
+                Add Component
+              </Button>
+            </DropdownTrigger>
+            <DropdownMenu aria-label="Static Actions">
+              <DropdownItem
+                key={"tire"}
+                onPress={() => handleComponentsAddModal("tire")}
+              >
+                Tire
+              </DropdownItem>
+              <DropdownItem
+                key={"brakes"}
+                onPress={() => handleComponentsAddModal("brakes")}
+              >
+                Brakes
+              </DropdownItem>
+              <DropdownItem
+                key={"aerodynamics"}
+                onPress={() => handleComponentsAddModal("aerodynamics")}
+              >
+                Aerodynamics
+              </DropdownItem>
+              <DropdownItem
+                key={"engine"}
+                onPress={() => handleComponentsAddModal("engine")}
+              >
+                Engine
+              </DropdownItem>
+              <DropdownItem
+                key={"transmission"}
+                onPress={() => handleComponentsAddModal("transmission")}
+              >
+                Transmission
+              </DropdownItem>
+            </DropdownMenu>
+          </Dropdown>
+        </div>
+        <ComponentContainer
+          components={componentData.components}
+          updateCallback={handleGetComponents}
+        />
+      </DefaultLayout>
+    </>
+  );
 }
