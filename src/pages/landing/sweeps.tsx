@@ -3,7 +3,7 @@ import {  Table,  TableHeader,  TableBody,  TableColumn,  TableRow,  TableCell, 
 import { generateClient } from "aws-amplify/api";
 import { Schema } from "../../../amplify/data/resource";
 import { useEffect, useState } from "react";
-import { Button, ButtonGroup } from "@heroui/button";
+import { Button } from "@heroui/button";
 import { Link } from "react-router-dom";
 
 const client = generateClient<Schema>();
@@ -17,6 +17,7 @@ type SimulationRow = {
 	updatedAt: string;
 	goTo: string;
 }
+
 const columns = [
 	{ key: "vehicle", label: "Vehicle" },
 	{ key: "track", label: "Track" },

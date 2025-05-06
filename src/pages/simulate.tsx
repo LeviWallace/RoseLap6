@@ -11,6 +11,8 @@ import { useState, useEffect } from "react";
 import TrackContainer from "@/components/tracks/track-container";
 import VehicleContainer from "@/components/vehicles/vehicle-container";
 import { Button } from "@heroui/button";
+import { useNavigate } from "react-router-dom";
+
 Amplify.configure(outputs)
 
 const client = generateClient<Schema>()
@@ -19,6 +21,7 @@ type Track = Schema['Track']['type']
 type Vehicle = Schema['Vehicle']['type']
 
 export default function SimulatePage() {
+	const navigate = useNavigate();
 	const {vehicle, track} = useMount();
 	
 		const [vehicles, setVehicles] = useState<Vehicle[]>();
@@ -50,15 +53,21 @@ export default function SimulatePage() {
 			if (!vehicle || !track) {
 				return;
 			}
-			client.queries.simulate({
-				vehicleId: vehicle.id,
-				trackId: track.id
-			}).then((res) => {
-				console.log(res) ;
-			}).catch((err) => {
+
+			try {
+				const response = await client.models.Simulation.create({
+					vehicle: vehicle.id,
+					track: track.id
+				});
+				
+				if (response && response.data) {
+					window.location.href = `/simulation?id=${response.data.id}`;
+				}
+			} catch (err) {
 				console.error(err);
 			}
-					)
+			
+			navigate(`/simulation?id=${vehicle.id}`);
 		}
 	
 	

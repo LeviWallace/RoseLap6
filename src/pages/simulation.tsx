@@ -58,8 +58,8 @@ export default function SimulationPage() {
                     </div>
                     <div className="mt-5 h-full">
                         {!(simulation && simulation.completed) ? (
-                            <Tabs aria-label="Options" defaultValue="photos" className="w-full" classNames={{ tabContent: "text-black group-data-[selected=true]:text-white", tabList: "bg-gray-100", tab: "bg-transparent" }}>
-                                <Tab key="vehicle" title="Vehicle" color="primary">
+                            <Tabs aria-label="Options" defaultValue="photos" className="w-full" classNames={{ tabContent: "text-black group-data-[selected=true]:text-white", tabList: "bg-gray-100" }}>
+                                <Tab key="vehicle" title="Vehicle">
                                     <div className="flex flex-row justify-between items-center mt-5">
                                         <Card className="w-[24%] bg-white">
                                             <CardHeader className="pb-2">
