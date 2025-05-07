@@ -69,12 +69,12 @@ export default function NavbarDropdown() {
       <DropdownMenu aria-label="Static Actions">
         <DropdownSection showDivider className="">
           <DropdownItem
-            key={siteConfig.account.href}
+            key={siteConfig.home.href}
             color="primary"
-            description={siteConfig.account.sublabel}
+            description={siteConfig.home.sublabel}
           >
-            <Link color="foreground" href={siteConfig.account.href}>
-              {siteConfig.account.label}
+            <Link color="foreground" href={siteConfig.home.href}>
+              {siteConfig.home.label}
             </Link>
           </DropdownItem>
         </DropdownSection>
@@ -88,18 +88,16 @@ export default function NavbarDropdown() {
           ))}
         </DropdownSection>
         <DropdownSection>
-          <DropdownItem key="vehicle" isDisabled={vehicle == undefined}>
-            Mounted: {vehicle != undefined ? vehicle.name : "Missing Vehicle"}
-          </DropdownItem>
-
-          <DropdownItem
-            key="track"
-            showDivider
-            color="secondary"
-            isDisabled={track == undefined}
+        <DropdownItem
+            key={siteConfig.simulate.href}
+            color="primary"
+            description={`${vehicle?.name ?? "Missing Vehicle"} | ${track?.name ?? "Missing Track"}`}
           >
-            Mounted: {track != undefined ? track.name : "Missing Track"}
+            <Link color={vehicle != null && track != null ? "warning" : "foreground"} href={siteConfig.simulate.href}>
+              <h1 className={(vehicle != null && track != null) ? "font-bold tracking-tighter" : ""}>{siteConfig.simulate.label}</h1>
+            </Link>
           </DropdownItem>
+        
         </DropdownSection>
         <DropdownItem
           key="delete"

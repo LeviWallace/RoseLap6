@@ -11,10 +11,14 @@ export const siteConfig = {
     label: "Sign Out",
     href: "/",
   },
-  account: {
-    label: "My Account",
-    sublabel: "View Account Settings",
-    href: "/landing",
+  home: {
+    label: "Home",
+    sublabel: "Go to Home",
+    href: "/",
+  },
+  simulate: {
+    label: "Simulate",
+    href: "/simulate",
   },
   navItems: [
     {
