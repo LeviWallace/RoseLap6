@@ -2,6 +2,7 @@ import json
 import boto3
 import uuid
 import numpy as np
+import os
 import time
 import math
 from scipy.interpolate import interp1d
@@ -102,7 +103,7 @@ def handler(event, context):
         Key={
             'id': simulation_id
         },
-        UpdateExpression="SET tFetchTime = :tFetchTime, tBrakeModel = :tBrakeModel, tSteeringModel = :tSteeringModel, tDrivelineModel = :tDrivelineModel, tShiftingModel = :tShiftingModel, tForceModel = :tForceModel, tGGVMapModel = :tGGVMapModel, tSimulationTime = :tSimulationTime, completed = :completed",
+        UpdateExpression="SET tFetchTime = :tFetchTime, tBrakeModel = :tBrakeModel, tSteeringModel = :tSteeringModel, tDrivelineModel = :tDrivelineModel, tShiftingModel = :tShiftingModel, tForceModel = :tForceModel, tGGVMapModel = :tGGVMapModel, tSimulationTime = :tSimulationTime, completed = :completed, engineSpeedCurve = :engineSpeedCurve, engineTorqueCurve = :engineTorqueCurve, enginePowerCurve = :enginePowerCurve, vehicleSpeed = :vehicleSpeed, engineSpeed = :engineSpeed, gear = :gear, fxEngine = :fxEngine",
         ExpressionAttributeValues={
             ":tFetchTime": Decimal(str(fetch_time)),
             ":tBrakeModel": Decimal(str(simulation_props["tBrakeModel"])),
@@ -112,13 +113,21 @@ def handler(event, context):
             ":tForceModel": Decimal(str(simulation_props["tForceModel"])),
             ":tGGVMapModel": Decimal(str(simulation_props["tGGVMapModel"])),
             ":tSimulationTime": Decimal(str(calculation_time)),
-            ":completed": True
+            ":completed": True,
+            ":engineSpeedCurve": [Decimal(str(v)) for v in simulation_props["engineSpeedCurve"]],
+            ":engineTorqueCurve": [Decimal(str(v)) for v in simulation_props["engineTorqueCurve"]],
+            ":enginePowerCurve": [Decimal(str(v)) for v in simulation_props["enginePowerCurve"]],
+            ":vehicleSpeed": [Decimal(str(v)) for v in simulation_props["vehicleSpeed"]],
+            ":engineSpeed": [Decimal(str(v)) for v in simulation_props["engineSpeed"]],
+            ":gear": [Decimal(str(v)) for v in simulation_props["gear"]],
+            ":fxEngine": [Decimal(str(v)) for v in simulation_props["fxEngine"]]
         }
     )
 
     return json.dumps({
         "statusCode": 200,
         "message": "Simulation completed successfully",
+        "simulation": simulation_props
     })
 
 
@@ -225,7 +234,7 @@ def calculate_vehicle_model(vehicle, brakes, tire, transmission, aerodynamics, e
     v_max = max(max(v) for v in vehicle_speed_gear)
 
     # New speed vector for coarser meshing
-    dv = 5 * (7.2 / 3.6)  # [m/s]
+    dv = (7.2 / 3.6)  # [m/s]
     vehicle_speed = np.linspace(v_min, v_max, int((v_max - v_min) / dv) + 1)
     n_points = len(vehicle_speed)
 
@@ -413,4 +422,11 @@ def calculate_vehicle_model(vehicle, brakes, tire, transmission, aerodynamics, e
         "tShiftingModel": shifting_time,
         "tForceModel": force_time,
         "tGGVMapModel": ggv_time,
+        "engineSpeedCurve": en_speed_curve.tolist(),
+        "engineTorqueCurve": en_torque_curve.tolist(),
+        "enginePowerCurve": en_power_curve,
+        "vehicleSpeed": vehicle_speed.tolist(),
+        "engineSpeed": engine_speed.tolist(),
+        "gear": gear.tolist(),
+        "fxEngine": fx_engine.tolist(),
     }

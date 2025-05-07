@@ -135,6 +135,28 @@ const schema = a.schema({
 		track: a.id().required(),
 		completed: a.boolean().default(false),
 
+		// General Parameters
+		vehicleName: a.string(),
+		trackName: a.string(),
+		trackCountry: a.string(),
+		trackState: a.string(),
+		trackCity: a.string(),
+
+		// Engine Curves
+		engineSpeedCurve: a.float().array(),
+		engineTorqueCurve: a.float().array(),
+		enginePowerCurve: a.float().array(),
+	
+		// Gearing Curves
+		vehicleSpeed: a.float().array(),
+		engineSpeed: a.float().array(),
+		enginePower: a.float().array(),
+		gear: a.float().array(),
+
+		// Trackion Model
+		fxEngine: a.float().array(),
+		beta: a.float(),
+
 		tFetchTime: a.float().default(0),
 		tBrakeModel: a.float().default(0),
 		tSteeringModel: a.float().default(0),

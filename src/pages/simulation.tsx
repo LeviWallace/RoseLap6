@@ -6,7 +6,8 @@ import { generateClient } from "aws-amplify/api";
 import { useEffect, useState } from "react";
 import { CircularProgress } from "@heroui/progress";
 
-import { type Schema } from "@/../amplify/data/resource";
+import { Schema } from "@/../amplify/data/resource";
+import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
 const client = generateClient<Schema>();
 
@@ -14,7 +15,7 @@ type Simulation = Schema["Simulation"]["type"];
 
 export default function SimulationPage() {
   const params = new URLSearchParams(window.location.search);
-  const id = params.get("id") || "Error: No ID found";
+  const [id, setId] = useState(params.get("id") || "Error fetching simulation data");
   const [simulation, setSimulation] = useState<Simulation | null>(null);
 
   async function handleGetSimulation() {
@@ -22,6 +23,7 @@ export default function SimulationPage() {
 
     if (errors || !data) {
       console.error(errors);
+      setId("Error fetching simulation data");
       return;
     }
 
@@ -29,9 +31,10 @@ export default function SimulationPage() {
       handleSimulate(data.id)
 
       const { data: newData, errors: newErrors } = await client.models.Simulation.get({ id });
-      
+
       if (newErrors || !newData) {
         console.error(newErrors);
+        setId("Error fetching simulation data");
         return;
       }
 
@@ -43,6 +46,8 @@ export default function SimulationPage() {
     }
 
     console.log(simulation);
+    // console.log(simulation?.enginePowerCurve)
+    // console.log(simulation?.engineTorqueCurve);
   }
 
   async function handleSimulate(id: string) {
@@ -102,7 +107,7 @@ export default function SimulationPage() {
             {(simulation && simulation.completed) ? (
               <Tabs
                 defaultSelectedKey="benchmarking"
-                disabledKeys={["track", "vehicle"]}
+                // disabledKeys={["track", "vehicle"]}
                 aria-label="Options"
                 className="w-full"
                 classNames={{
@@ -110,108 +115,73 @@ export default function SimulationPage() {
                     "text-black group-data-[selected=true]:text-white",
                   tabList: "bg-gray-100",
                 }}
-                
+
               >
                 <Tab key="vehicle" title="Vehicle">
-                  <div className="flex flex-row justify-between items-center mt-5">
-                    <Card className="w-[24%] bg-white">
-                      <CardHeader className="pb-2">
-                        <h1 className="font-semibold text-black px-3 pt-2">
-                          Total Revenue
-                        </h1>
-                      </CardHeader>
-                      <CardBody className="pb-0 pt-0">
-                        <h1 className="text-2xl font-bold text-black px-3">
-                          $45,231.89
-                        </h1>
-                      </CardBody>
-                      <CardFooter className="pb-5 pt-0">
-                        <h1 className="font-thin text-black px-3">
-                          +20.1% from last month
-                        </h1>
-                      </CardFooter>
-                    </Card>
-                    <Card className="w-[24%] bg-white">
-                      <CardHeader className="pb-2">
-                        <h1 className="font-semibold text-black px-3 pt-2">
-                          Total Revenue
-                        </h1>
-                      </CardHeader>
-                      <CardBody className="pb-0 pt-0">
-                        <h1 className="text-2xl font-bold text-black px-3">
-                          $45,231.89
-                        </h1>
-                      </CardBody>
-                      <CardFooter className="pb-5 pt-0">
-                        <h1 className="font-thin text-black px-3">
-                          +20.1% from last month
-                        </h1>
-                      </CardFooter>
-                    </Card>
-                    <Card className="w-[24%] bg-white">
-                      <CardHeader className="pb-2">
-                        <h1 className="font-semibold text-black px-3 pt-2">
-                          Total Revenue
-                        </h1>
-                      </CardHeader>
-                      <CardBody className="pb-0 pt-0">
-                        <h1 className="text-2xl font-bold text-black px-3">
-                          $45,231.89
-                        </h1>
-                      </CardBody>
-                      <CardFooter className="pb-5 pt-0">
-                        <h1 className="font-thin text-black px-3">
-                          +20.1% from last month
-                        </h1>
-                      </CardFooter>
-                    </Card>
-                    <Card className="w-[24%] bg-white">
-                      <CardHeader className="pb-2">
-                        <h1 className="font-semibold text-black px-3 pt-2">
-                          Total Revenue
-                        </h1>
-                      </CardHeader>
-                      <CardBody className="pb-0 pt-0">
-                        <h1 className="text-2xl font-bold text-black px-3">
-                          $45,231.89
-                        </h1>
-                      </CardBody>
-                      <CardFooter className="pb-5 pt-0">
-                        <h1 className="font-thin text-black px-3">
-                          +20.1% from last month
-                        </h1>
-                      </CardFooter>
-                    </Card>
-                  </div>
-                  <div className="flex flex-row justify-between items-center mt-5">
-                    <Card className="w-[59%] bg-white">
+                  <div className="grid grid-cols-2 gap-4 justify-between items-center mt-5">
+                    <Card className="bg-white">
                       <CardHeader className="pb-2">
                         <h1 className="font-bold text-black px-3 pt-2">
-                          GGV Plot
+                          Engine Power Curve
                         </h1>
                       </CardHeader>
                       <CardBody className="pb-0 pt-0">
-                        <div>
-                          <img
-                            alt="GGV Plot"
-                            className="w-full h-auto"
-                            src="https://placehold.co/600x400/EEE/31343C"
-                          />
-                        </div>
+                        <ResponsiveContainer width="100%" height={400}>
+                          <LineChart data={simulation.engineSpeedCurve.map((rpm, index) => ({
+                            rpm,
+                            torque: simulation.engineTorqueCurve[index],
+                            power: simulation.enginePowerCurve[index],
+                          }))} margin={{ top: 20, right: 50, left: 20, bottom: 10 }}>
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis dataKey="rpm" label={{ value: "Engine Speed [RPM]", position: "insideBottom", offset: -5 }} />
+                            {/* Left Y-axis: Torque */}
+                            <YAxis
+                              yAxisId="left"
+                              label={{ value: "Torque [Nm]", angle: -90, position: "insideLeft" }}
+                            />
+
+                            {/* Right Y-axis: Power */}
+                            <YAxis
+                              yAxisId="right"
+                              orientation="right"
+                              label={{ value: "Power [Hp]", angle: 90, position: "insideRight" }}
+                            />
+
+                            <Tooltip labelStyle={{color: 'black'}}
+                                labelFormatter={(label) => { return label.toFixed(2) }}
+                                formatter={(value: number) => { return value.toFixed(2) }}/>
+                            <Legend />
+
+                            <Line yAxisId="left" type="monotone" dataKey="torque" stroke="red" name="Torque" />
+                            <Line yAxisId="right" type="monotone" dataKey="power" stroke="black" name="Power" />
+                          </LineChart>
+                        </ResponsiveContainer>
                       </CardBody>
                     </Card>
-                    <Card className="w-[39%] bg-white">
+                    <Card className="bg-white">
                       <CardHeader className="pb-2">
-                        <div className="flex-row justify-between items-center">
-                          <h1 className="font-bold text-black px-3 pt-2">
-                            Recent Sales
-                          </h1>
-                          <h2 className="font-thin text-black px-3">
-                            Last 30 days
-                          </h2>
-                        </div>
+                        <h1 className="font-bold text-black px-3 pt-2">
+                          Engine Tractive Force vs. Vehicle Speed
+                        </h1>
                       </CardHeader>
-                      <CardBody className="pb-0 pt-0" />
+                      <CardBody className="pb-0 pt-0">
+                        <ResponsiveContainer width="100%" height={400}>
+                          <LineChart data={simulation.vehicleSpeed.map((speed, index) => ({
+                            speed: speed * 3.6,
+                            force: simulation.fxEngine[index]
+                          }))} margin={{ top: 20, right: 50, left: 20, bottom: 10 }}>
+                            <CartesianGrid strokeDasharray="3 3" />
+                              <XAxis dataKey="speed" label={{ value: 'Vehicle Speed [km/h]', position: 'insideBottomRight', offset: -5 }} tickFormatter={(value) => value.toFixed(0)}/>
+                              <YAxis label={{ value: 'Tractive Force [N]', angle: -90, position: 'insideLeft' }} tickFormatter={(value) => value.toFixed(0)}/>
+                              <Tooltip 
+                                labelStyle={{color: 'black'}}
+                                labelFormatter={(label) => { return label.toFixed(2) }}
+                                formatter={(value: number) => { return value.toFixed(2) }}/>
+                              <Legend />
+                              <Line type="monotone" dataKey="force" stroke="red" strokeWidth={2} name="Engine Force" dot={false} />
+                            </LineChart>
+                        </ResponsiveContainer>
+                      </CardBody>
                     </Card>
                   </div>
                 </Tab>
@@ -233,21 +203,21 @@ export default function SimulationPage() {
                       { label: "Simulation Time", value: simulation.tSimulationTime, description: "Total simulation time" },
                     ].map((item, index) => (
                       <Card key={index} className="bg-white">
-                      <CardHeader className="pb-2">
-                        <h1 className="font-semibold text-black px-3 pt-2">
-                        {item.label}
-                        </h1>
-                      </CardHeader>
-                      <CardBody className="pb-0 pt-0">
-                        <h1 className="text-2xl font-bold text-black px-3">
-                        {item.value?.toFixed(4)} ms
-                        </h1>
-                      </CardBody>
-                      <CardFooter className="pb-5 pt-1">
-                        <h1 className="font-thin text-sm text-black px-3">
-                        {item.description}
-                        </h1>
-                      </CardFooter>
+                        <CardHeader className="pb-2">
+                          <h1 className="font-semibold text-black px-3 pt-2">
+                            {item.label}
+                          </h1>
+                        </CardHeader>
+                        <CardBody className="pb-0 pt-0">
+                          <h1 className="text-2xl font-bold text-black px-3">
+                            {item.value?.toFixed(4)} ms
+                          </h1>
+                        </CardBody>
+                        <CardFooter className="pb-5 pt-1">
+                          <h1 className="font-thin text-sm text-black px-3">
+                            {item.description}
+                          </h1>
+                        </CardFooter>
                       </Card>
                     ))}
 
