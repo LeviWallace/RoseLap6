@@ -119,6 +119,7 @@ export default function SimulationPage() {
               >
                 <Tab key="vehicle" title="Vehicle">
                   <div className="grid grid-cols-2 gap-4 justify-between items-center mt-5">
+                    {(simulation.engineSpeedCurve) &&
                     <Card className="bg-white">
                       <CardHeader className="pb-2">
                         <h1 className="font-bold text-black px-3 pt-2">
@@ -129,8 +130,8 @@ export default function SimulationPage() {
                         <ResponsiveContainer width="100%" height={400}>
                           <LineChart data={simulation.engineSpeedCurve.map((rpm, index) => ({
                             rpm,
-                            torque: simulation.engineTorqueCurve[index],
-                            power: simulation.enginePowerCurve[index],
+                            torque: (simulation.engineTorqueCurve ?? [])[index],
+                            power: (simulation.enginePowerCurve ?? [])[index],
                           }))} margin={{ top: 20, right: 50, left: 20, bottom: 10 }}>
                             <CartesianGrid strokeDasharray="3 3" />
                             <XAxis dataKey="rpm" label={{ value: "Engine Speed [RPM]", position: "insideBottom", offset: -5 }} />
@@ -158,6 +159,7 @@ export default function SimulationPage() {
                         </ResponsiveContainer>
                       </CardBody>
                     </Card>
+      }
                     <Card className="bg-white">
                       <CardHeader className="pb-2">
                         <h1 className="font-bold text-black px-3 pt-2">
@@ -166,9 +168,9 @@ export default function SimulationPage() {
                       </CardHeader>
                       <CardBody className="pb-0 pt-0">
                         <ResponsiveContainer width="100%" height={400}>
-                          <LineChart data={simulation.vehicleSpeed.map((speed, index) => ({
-                            speed: speed * 3.6,
-                            force: simulation.fxEngine[index]
+                          <LineChart data={(simulation.vehicleSpeed ?? []).map((speed, index) => ({
+                            speed: speed ? speed * 3.6 : 0,
+                            force: (simulation.fxEngine ?? [])[index]
                           }))} margin={{ top: 20, right: 50, left: 20, bottom: 10 }}>
                             <CartesianGrid strokeDasharray="3 3" />
                               <XAxis dataKey="speed" label={{ value: 'Vehicle Speed [km/h]', position: 'insideBottomRight', offset: -5 }} tickFormatter={(value) => value.toFixed(0)}/>
