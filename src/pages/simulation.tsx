@@ -5,6 +5,8 @@ import { Card, CardBody, CardFooter, CardHeader } from "@heroui/card";
 import { generateClient } from "aws-amplify/api";
 import { useEffect, useState } from "react";
 import { CircularProgress } from "@heroui/progress";
+import { DateInput } from "@heroui/date-input";
+import { parseAbsoluteToLocal} from "@internationalized/date";
 
 import { Schema } from "@/../amplify/data/resource";
 import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
@@ -99,7 +101,18 @@ export default function SimulationPage() {
               Simulation Dashboard
             </h1>
             <div className="flex flex-row space-x-4 items-center">
-              <a className="text-black">{simulation?.createdAt}</a>
+              {simulation?.createdAt && <DateInput
+                        defaultValue={parseAbsoluteToLocal(simulation?.createdAt)}
+                        isDisabled
+                        classNames={
+                          {
+                            inputWrapper: "bg-white",
+                            segment: "!text-black",
+                            input: "font-semibold",
+                            base: "opacity-100"
+}
+                          }
+              />}
               <Button className="bg-black text-white">Download</Button>
             </div>
           </div>

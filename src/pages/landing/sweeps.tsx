@@ -11,6 +11,8 @@ import { generateClient } from "aws-amplify/api";
 import { useEffect, useState } from "react";
 import { Button } from "@heroui/button";
 import { Link } from "react-router-dom";
+import { DateInput } from "@heroui/date-input";
+import { parseAbsoluteToLocal} from "@internationalized/date";
 
 import { Schema } from "../../../amplify/data/resource";
 
@@ -24,7 +26,7 @@ type SimulationRow = {
   vehicle: string;
   track: string;
   completed: string;
-  updatedAt: string;
+  dateCreated: string;
   goTo: string;
 };
 
@@ -54,7 +56,7 @@ export default function SweepsPage() {
           vehicle: vehicle.data?.name ?? "Missing Vehicle",
           track: track.data?.name ?? "Missing Track",
           completed: sweep.completed ? "Yes" : "No",
-          updatedAt: sweep.updatedAt,
+          dateCreated: sweep.createdAt,
           goTo: `/simulation?id=${sweep.id}`,
         };
       }),
@@ -88,18 +90,34 @@ export default function SweepsPage() {
             <TableRow key={item.key}>
               {(columnKey) => (
                 <TableCell>
-                  {columnKey === "goTo" ? (
-                    <Button
+                  {(() => {
+                  switch (columnKey) {
+                    case "goTo":
+                    return (
+                      <Button
                       as={Link}
                       className="w-full rounded-sm bg-foreground text-black font-semibold"
                       size="sm"
                       to={item.goTo}
-                    >
+                      >
                       Go to Simulation
-                    </Button>
-                  ) : (
-                    getKeyValue(item, columnKey)
-                  )}
+                      </Button>
+                    );
+                    case "dateCreated":
+                      return (
+                      <DateInput
+                        defaultValue={parseAbsoluteToLocal(item.dateCreated)}
+                        isDisabled
+                        classNames={
+                          { inputWrapper: "bg-transparent ",
+                            input: "text-foreground",
+                            base: "opacity-100" }
+                        }
+                      />);
+                    default:
+                    return getKeyValue(item, columnKey);
+                  }
+                  })()}
                 </TableCell>
               )}
             </TableRow>
