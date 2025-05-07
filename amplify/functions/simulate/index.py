@@ -11,16 +11,23 @@ from decimal import Decimal
 
 dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
 
-track_table = dynamodb.Table("Track-nxbm7lb2srcidguvzbwydc5jqi-NONE")
-vehicle_table = dynamodb.Table("Vehicle-nxbm7lb2srcidguvzbwydc5jqi-NONE")
+ENVIRONMENT = {
+    "DEV": "nxbm7lb2srcidguvzbwydc5jqi-NONE",
+    "PROD": "ekrfwehdljgurnxhdul2c2kezi-NONE"
+}
 
-transmission_table = dynamodb.Table("Transmission-nxbm7lb2srcidguvzbwydc5jqi-NONE")
-aerodynamics_table = dynamodb.Table("Aerodynamics-nxbm7lb2srcidguvzbwydc5jqi-NONE")
-brakes_table = dynamodb.Table("Brakes-nxbm7lb2srcidguvzbwydc5jqi-NONE")
-engine_table = dynamodb.Table("Engine-nxbm7lb2srcidguvzbwydc5jqi-NONE")
-tire_table = dynamodb.Table("Tire-nxbm7lb2srcidguvzbwydc5jqi-NONE")
+ENV  = "PROD"
 
-simulation_table = dynamodb.Table("Simulation-nxbm7lb2srcidguvzbwydc5jqi-NONE")
+track_table = dynamodb.Table("Track-{}".format(ENVIRONMENT[ENV]))
+vehicle_table = dynamodb.Table("Vehicle-{}".format(ENVIRONMENT[ENV]))
+
+transmission_table = dynamodb.Table("Transmission-{}".format(ENVIRONMENT[ENV]))
+aerodynamics_table = dynamodb.Table("Aerodynamics-{}".format(ENVIRONMENT[ENV]))
+brakes_table = dynamodb.Table("Brakes-{}".format(ENVIRONMENT[ENV]))
+engine_table = dynamodb.Table("Engine-{}".format(ENVIRONMENT[ENV]))
+tire_table = dynamodb.Table("Tire-{}".format(ENVIRONMENT[ENV]))
+
+simulation_table = dynamodb.Table("Simulation-{}".format(ENVIRONMENT[ENV]))
 
 
 def load_table(table, id):
