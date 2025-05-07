@@ -106,6 +106,7 @@ export default function SweepsPage() {
                     case "dateCreated":
                       return (
                       <DateInput
+                        aria-label="Simulation Date"
                         defaultValue={parseAbsoluteToLocal(item.dateCreated)}
                         isDisabled
                         classNames={

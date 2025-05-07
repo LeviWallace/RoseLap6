@@ -6,7 +6,7 @@ import { generateClient } from "aws-amplify/api";
 import { useEffect, useState } from "react";
 import { CircularProgress } from "@heroui/progress";
 import { DateInput } from "@heroui/date-input";
-import { parseAbsoluteToLocal} from "@internationalized/date";
+import { parseAbsoluteToLocal } from "@internationalized/date";
 
 import { Schema } from "@/../amplify/data/resource";
 import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
@@ -24,32 +24,40 @@ export default function SimulationPage() {
     const { data, errors } = await client.models.Simulation.get({ id });
 
     if (errors || !data) {
-      console.error(errors);
       setId("Error fetching simulation data");
       return;
     }
 
     if (!data.completed) {
-      handleSimulate(data.id)
+      // Wait for simulation to complete
+      await handleSimulate(data.id);
 
-      const { data: newData, errors: newErrors } = await client.models.Simulation.get({ id });
+      // Poll for completion (or just re-fetch, based on your preference)
+      let attempts = 0;
+      let maxAttempts = 10;
+      let newData = null;
+      while (attempts < maxAttempts) {
+        const result = await client.models.Simulation.get({ id });
+        if (result.data?.completed) {
+          newData = result.data;
+          break;
+        }
+        await new Promise((res) => setTimeout(res, 5000)); // optional delay
+        attempts++;
+      }
 
-      if (newErrors || !newData) {
-        console.error(newErrors);
-        setId("Error fetching simulation data");
+      if (!newData) {
+        setId("Simulation did not complete in time");
         return;
       }
 
       const simulationData = newData as Simulation;
       setSimulation(simulationData);
+      console.log("Simulation Ended", simulationData);
     } else {
       const simulationData = data as Simulation;
       setSimulation(simulationData);
     }
-
-    console.log(simulation);
-    // console.log(simulation?.enginePowerCurve)
-    // console.log(simulation?.engineTorqueCurve);
   }
 
   async function handleSimulate(id: string) {
@@ -59,13 +67,22 @@ export default function SimulationPage() {
       console.log("Simulation started", response);
     }).catch((error) => {
       console.error("Error starting simulation", error);
+    }).finally(() => {
+      console.log("Simulation finished");
     });
-
   }
 
   useEffect(() => {
     handleGetSimulation();
   }, []);
+
+  useEffect(() => {
+    if (simulation && simulation.completed) {
+      console.log("Simulation done!")
+    } else {
+      console.log("Simulation in progress", simulation)
+    }
+  }, [simulation]);
 
   return (
     <div className="flex flex-col w-full min-h-screen bg-white">
@@ -102,16 +119,17 @@ export default function SimulationPage() {
             </h1>
             <div className="flex flex-row space-x-4 items-center">
               {simulation?.createdAt && <DateInput
-                        defaultValue={parseAbsoluteToLocal(simulation?.createdAt)}
-                        isDisabled
-                        classNames={
-                          {
-                            inputWrapper: "bg-white",
-                            segment: "!text-black",
-                            input: "font-semibold",
-                            base: "opacity-100"
-}
-                          }
+                defaultValue={parseAbsoluteToLocal(simulation?.createdAt)}
+                isDisabled
+                aria-label="Simulation Date"
+                classNames={
+                  {
+                    inputWrapper: "bg-white",
+                    segment: "!text-black",
+                    input: "font-semibold",
+                    base: "opacity-100"
+                  }
+                }
               />}
               <Button className="bg-black text-white">Download</Button>
             </div>
@@ -119,7 +137,7 @@ export default function SimulationPage() {
           <div className="mt-5 h-full">
             {(simulation && simulation.completed) ? (
               <Tabs
-                defaultSelectedKey="benchmarking"
+                defaultSelectedKey="vehicle"
                 // disabledKeys={["track", "vehicle"]}
                 aria-label="Options"
                 className="w-full"
@@ -133,46 +151,46 @@ export default function SimulationPage() {
                 <Tab key="vehicle" title="Vehicle">
                   <div className="grid grid-cols-2 gap-4 justify-between items-center mt-5">
                     {(simulation.engineSpeedCurve) &&
-                    <Card className="bg-white">
-                      <CardHeader className="pb-2">
-                        <h1 className="font-bold text-black px-3 pt-2">
-                          Engine Power Curve
-                        </h1>
-                      </CardHeader>
-                      <CardBody className="pb-0 pt-0">
-                        <ResponsiveContainer width="100%" height={400}>
-                          <LineChart data={simulation.engineSpeedCurve.map((rpm, index) => ({
-                            rpm,
-                            torque: (simulation.engineTorqueCurve ?? [])[index],
-                            power: (simulation.enginePowerCurve ?? [])[index],
-                          }))} margin={{ top: 20, right: 50, left: 20, bottom: 10 }}>
-                            <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis dataKey="rpm" label={{ value: "Engine Speed [RPM]", position: "insideBottom", offset: -5 }} />
-                            {/* Left Y-axis: Torque */}
-                            <YAxis
-                              yAxisId="left"
-                              label={{ value: "Torque [Nm]", angle: -90, position: "insideLeft" }}
-                            />
+                      <Card className="bg-white">
+                        <CardHeader className="pb-2">
+                          <h1 className="font-bold text-black px-3 pt-2">
+                            Engine Power Curve
+                          </h1>
+                        </CardHeader>
+                        <CardBody className="pb-0 pt-0">
+                          <ResponsiveContainer width="100%" height={400}>
+                            <LineChart data={simulation.engineSpeedCurve.map((rpm, index) => ({
+                              rpm,
+                              torque: (simulation.engineTorqueCurve ?? [])[index],
+                              power: (simulation.enginePowerCurve ?? [])[index],
+                            }))} margin={{ top: 20, right: 50, left: 20, bottom: 10 }}>
+                              <CartesianGrid strokeDasharray="3 3" />
+                              <XAxis dataKey="rpm" label={{ value: "Engine Speed [RPM]", position: "insideBottom", offset: -5 }} />
+                              {/* Left Y-axis: Torque */}
+                              <YAxis
+                                yAxisId="left"
+                                label={{ value: "Torque [Nm]", angle: -90, position: "insideLeft" }}
+                              />
 
-                            {/* Right Y-axis: Power */}
-                            <YAxis
-                              yAxisId="right"
-                              orientation="right"
-                              label={{ value: "Power [Hp]", angle: 90, position: "insideRight" }}
-                            />
+                              {/* Right Y-axis: Power */}
+                              <YAxis
+                                yAxisId="right"
+                                orientation="right"
+                                label={{ value: "Power [Hp]", angle: 90, position: "insideRight" }}
+                              />
 
-                            <Tooltip labelStyle={{color: 'black'}}
+                              <Tooltip labelStyle={{ color: 'black' }}
                                 labelFormatter={(label) => { return label.toFixed(2) }}
-                                formatter={(value: number) => { return value.toFixed(2) }}/>
-                            <Legend />
+                                formatter={(value: number) => { return value.toFixed(2) }} />
+                              <Legend />
 
-                            <Line yAxisId="left" type="monotone" dataKey="torque" stroke="red" name="Torque" />
-                            <Line yAxisId="right" type="monotone" dataKey="power" stroke="black" name="Power" />
-                          </LineChart>
-                        </ResponsiveContainer>
-                      </CardBody>
-                    </Card>
-      }
+                              <Line yAxisId="left" type="monotone" dataKey="torque" stroke="red" name="Torque" />
+                              <Line yAxisId="right" type="monotone" dataKey="power" stroke="black" name="Power" />
+                            </LineChart>
+                          </ResponsiveContainer>
+                        </CardBody>
+                      </Card>
+                    }
                     <Card className="bg-white">
                       <CardHeader className="pb-2">
                         <h1 className="font-bold text-black px-3 pt-2">
@@ -186,15 +204,15 @@ export default function SimulationPage() {
                             force: (simulation.fxEngine ?? [])[index]
                           }))} margin={{ top: 20, right: 50, left: 20, bottom: 10 }}>
                             <CartesianGrid strokeDasharray="3 3" />
-                              <XAxis dataKey="speed" label={{ value: 'Vehicle Speed [km/h]', position: 'insideBottomRight', offset: -5 }} tickFormatter={(value) => value.toFixed(0)}/>
-                              <YAxis label={{ value: 'Tractive Force [N]', angle: -90, position: 'insideLeft' }} tickFormatter={(value) => value.toFixed(0)}/>
-                              <Tooltip 
-                                labelStyle={{color: 'black'}}
-                                labelFormatter={(label) => { return label.toFixed(2) }}
-                                formatter={(value: number) => { return value.toFixed(2) }}/>
-                              <Legend />
-                              <Line type="monotone" dataKey="force" stroke="red" strokeWidth={2} name="Engine Force" dot={false} />
-                            </LineChart>
+                            <XAxis dataKey="speed" label={{ value: 'Vehicle Speed [km/h]', position: 'insideBottomRight', offset: -5 }} tickFormatter={(value) => value.toFixed(0)} />
+                            <YAxis label={{ value: 'Tractive Force [N]', angle: -90, position: 'insideLeft' }} tickFormatter={(value) => value.toFixed(0)} />
+                            <Tooltip
+                              labelStyle={{ color: 'black' }}
+                              labelFormatter={(label) => { return label.toFixed(2) }}
+                              formatter={(value: number) => { return value.toFixed(2) }} />
+                            <Legend />
+                            <Line type="monotone" dataKey="force" stroke="red" strokeWidth={2} name="Engine Force" dot={false} />
+                          </LineChart>
                         </ResponsiveContainer>
                       </CardBody>
                     </Card>
